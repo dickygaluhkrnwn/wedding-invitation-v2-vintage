@@ -1,26 +1,53 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* --- PALET WARNA VINTAGE 09 --- */
+  --foreground-rgb: 92, 64, 51; /* Vintage Brown */
+  --background-start-rgb: 249, 245, 235; /* Cream Paper */
+  --background-end-rgb: 238, 229, 210; /* Aged Paper */
+  
+  --color-vintage-gold: #C5A059;
+  --color-vintage-olive: #73785C;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  min-height: 100vh;
+}
+
+/* LAYER: Paper Texture Overlay (REAL IMAGE) */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Menggunakan file lokal yang kamu upload */
+  background-image: url("/images/vintage/paper-texture.png");
+  /* Mengatur agar texture repeat dengan halus */
+  background-repeat: repeat;
+  background-size: 500px; 
+  opacity: 0.5; /* Sesuaikan opacity agar tidak terlalu gelap */
+  pointer-events: none;
+  z-index: -1;
+  mix-blend-mode: multiply;
+}
+
+@layer utilities {
+  .text-shadow-vintage {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .font-script {
+    font-family: var(--font-pinyon), cursive;
+  }
 }

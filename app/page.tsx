@@ -1,65 +1,107 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
+import OpeningEnvelope from './components/OpeningEnvelope';
+import BackgroundMusic from './components/BackgroundMusic'; 
+import TheIntro from './components/TheIntro'; 
+import TheCouple from './components/TheCouple'; 
+import TheEvent from './components/TheEvent'; 
+import TheGallery from './components/TheGallery'; 
+import TheRSVP from './components/TheRSVP'; // Import Baru
+import TheGift from './components/TheGift'; // Import Baru
 
 export default function Home() {
+  const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false); 
+
+  const handleOpenInvitation = () => {
+    setIsEnvelopeOpen(true);
+    setIsMusicPlaying(true); 
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className="min-h-screen w-full overflow-x-hidden bg-vintage-cream text-vintage-brown relative">
+      
+      <BackgroundMusic isPlaying={isMusicPlaying} />
+
+      <AnimatePresence>
+        {!isEnvelopeOpen && (
+          <OpeningEnvelope onOpen={handleOpenInvitation} />
+        )}
+      </AnimatePresence>
+
+      {isEnvelopeOpen && (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 2, delay: 0.5 }} 
+            className="relative min-h-screen flex flex-col items-center"
+        >
+            {/* Bingkai Garis Tipis Global */}
+            <div className="fixed inset-3 md:inset-6 border border-vintage-gold/30 pointer-events-none z-50 mix-blend-multiply opacity-70">
+                <div className="absolute top-0 left-0 w-16 h-16 md:w-24 md:h-24 -translate-x-1/3 -translate-y-1/3">
+                    <Image src="/images/vintage/flower-corner.png" alt="decor" fill className="object-contain" />
+                </div>
+                <div className="absolute top-0 right-0 w-16 h-16 md:w-24 md:h-24 translate-x-1/3 -translate-y-1/3">
+                    <Image src="/images/vintage/flower-corner.png" alt="decor" fill className="object-contain rotate-90" />
+                </div>
+                <div className="absolute bottom-0 left-0 w-16 h-16 md:w-24 md:h-24 -translate-x-1/3 translate-y-1/3">
+                    <Image src="/images/vintage/flower-corner.png" alt="decor" fill className="object-contain -rotate-90" />
+                </div>
+                <div className="absolute bottom-0 right-0 w-16 h-16 md:w-24 md:h-24 translate-x-1/3 translate-y-1/3">
+                    <Image src="/images/vintage/flower-corner.png" alt="decor" fill className="object-contain rotate-180" />
+                </div>
+            </div>
+
+            {/* HERO SECTION */}
+            <section className="min-h-screen w-full flex flex-col items-center justify-center p-8 text-center relative">
+                <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+                    <div className="w-64 h-64 md:w-96 md:h-96 rounded-full border-[1px] border-vintage-brown animate-spin-slow" />
+                </div>
+
+                <div className="space-y-8 relative z-10 mt-10">
+                    <p className="font-serif tracking-[0.4em] text-xs md:text-sm text-vintage-olive uppercase">The Wedding Of</p>
+                    <div className="py-4 relative">
+                        <h1 className="font-script text-6xl md:text-9xl text-vintage-brown drop-shadow-sm">
+                            Rizky & Lesti
+                        </h1>
+                    </div>
+                    <div className="flex items-center justify-center gap-6 text-vintage-gold opacity-80">
+                        <div className="h-[1px] w-16 bg-vintage-gold"></div>
+                        <p className="font-serif text-lg md:text-xl tracking-[0.2em]">24 . 08 . 2025</p>
+                        <div className="h-[1px] w-16 bg-vintage-gold"></div>
+                    </div>
+                </div>
+                
+                <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1, y: [0, 10, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 2 }}
+                    className="absolute bottom-12 text-vintage-olive text-[10px] tracking-[0.3em] uppercase"
+                >
+                    Scroll Down
+                </motion.div>
+            </section>
+
+            <TheIntro />
+            <TheCouple />
+            <TheEvent />
+            <TheGallery />
+            
+            {/* --- FASE 6: RSVP & GIFT (Baru) --- */}
+            <TheRSVP />
+            <TheGift />
+
+            {/* Footer */}
+            <footer className="py-8 text-center text-[10px] text-vintage-olive uppercase tracking-widest opacity-50 pb-20">
+                © 2025 Rizky & Lesti Wedding. All Rights Reserved.
+            </footer>
+
+        </motion.div>
+      )}
+
+    </main>
   );
 }
