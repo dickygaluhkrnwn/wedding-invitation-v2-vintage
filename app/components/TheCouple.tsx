@@ -4,8 +4,14 @@ import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Instagram } from 'lucide-react';
+// Import tipe data
+import { InvitationData } from '@/lib/invitation';
 
-export default function TheCouple() {
+interface TheCoupleProps {
+  couple: InvitationData['couple'];
+}
+
+export default function TheCouple({ couple }: TheCoupleProps) {
   return (
     <section className="py-20 md:py-32 px-6 w-full max-w-7xl mx-auto space-y-20 md:space-y-32 overflow-hidden">
       
@@ -24,7 +30,7 @@ export default function TheCouple() {
         </div>
       </motion.div>
 
-      {/* --- THE GROOM (PRIA - RIZKY) --- */}
+      {/* --- THE GROOM (PRIA) --- */}
       <div className="flex flex-col md:flex-row items-center justify-center gap-10 md:gap-20">
         
         {/* Foto Pria (Kiri) */}
@@ -46,11 +52,11 @@ export default function TheCouple() {
                 />
             </div>
             
-            {/* Foto Groom - Pastikan path benar */}
+            {/* Foto Groom Dinamis */}
             <div className="absolute inset-5 z-10 overflow-hidden rounded-[3rem] bg-vintage-brown/10 shadow-inner">
                <Image 
-                 src="/images/vintage/groom.png" 
-                 alt="Rizky Billar - The Groom"
+                 src={couple.groomPhoto} 
+                 alt={couple.groomName}
                  fill
                  className="object-cover sepia-[0.2] hover:sepia-0 transition-all duration-1000 hover:scale-105"
                  sizes="(max-width: 768px) 100vw, 340px"
@@ -69,20 +75,24 @@ export default function TheCouple() {
         >
           <div>
             <h3 className="font-script text-5xl md:text-8xl text-vintage-brown leading-tight">
-                Rizky Billar
+                {couple.groomNickname}
             </h3>
             <p className="font-serif text-xs md:text-sm tracking-[0.2em] text-vintage-olive uppercase mt-2">
-                Putra Pertama dari Bpk. Fulan & Ibu Fulanah
+               {couple.groomName}
+            </p>
+            <div className="w-12 h-[1px] bg-vintage-gold my-4 mx-auto md:mx-0" />
+            <p className="font-serif text-xs md:text-sm text-vintage-brown/80">
+                {couple.groomParents}
             </p>
           </div>
 
           <p className="font-sans text-vintage-brown/80 leading-relaxed text-sm md:text-base max-w-md mx-auto md:mx-0 italic">
-            "Seorang pria yang mencintai kesederhanaan dan kehangatan keluarga. Berjanji untuk menjadi imam yang baik dan membimbing keluarga menuju Ridho-Nya."
+            "Seorang pria yang mencintai kesederhanaan dan kehangatan keluarga. Berjanji untuk menjadi imam yang baik."
           </p>
           
           <div className="pt-2 flex justify-center md:justify-start">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-vintage-gold hover:text-vintage-brown transition-colors flex items-center gap-2 text-[10px] md:text-xs tracking-widest uppercase border-b border-transparent hover:border-vintage-brown pb-1">
-                <Instagram size={14} /> @rizkybillar
+            <a href={couple.groomInstagram} target="_blank" rel="noopener noreferrer" className="text-vintage-gold hover:text-vintage-brown transition-colors flex items-center gap-2 text-[10px] md:text-xs tracking-widest uppercase border-b border-transparent hover:border-vintage-brown pb-1">
+                <Instagram size={14} /> Instagram
             </a>
           </div>
         </motion.div>
@@ -100,7 +110,7 @@ export default function TheCouple() {
         </div>
       </motion.div>
 
-      {/* --- THE BRIDE (WANITA - LESTI) --- */}
+      {/* --- THE BRIDE (WANITA) --- */}
       <div className="flex flex-col md:flex-row-reverse items-center justify-center gap-10 md:gap-20">
         
         {/* Foto Wanita (Kanan) */}
@@ -122,11 +132,11 @@ export default function TheCouple() {
                 />
             </div>
             
-            {/* Foto Bride - Pastikan path benar */}
+            {/* Foto Bride Dinamis */}
             <div className="absolute inset-5 z-10 overflow-hidden rounded-[3rem] bg-vintage-brown/10 shadow-inner">
                <Image 
-                 src="/images/vintage/bride.png" 
-                 alt="Lesti Kejora - The Bride"
+                 src={couple.bridePhoto} 
+                 alt={couple.brideName}
                  fill
                  className="object-cover sepia-[0.2] hover:sepia-0 transition-all duration-1000 hover:scale-105"
                  sizes="(max-width: 768px) 100vw, 340px"
@@ -145,20 +155,24 @@ export default function TheCouple() {
         >
           <div>
             <h3 className="font-script text-5xl md:text-8xl text-vintage-brown leading-tight">
-                Lesti Kejora
+                {couple.brideNickname}
             </h3>
             <p className="font-serif text-xs md:text-sm tracking-[0.2em] text-vintage-olive uppercase mt-2">
-                Putri Kedua dari Bpk. Fulan & Ibu Fulanah
+                {couple.brideName}
+            </p>
+            <div className="w-12 h-[1px] bg-vintage-gold my-4 mx-auto md:ml-auto" />
+            <p className="font-serif text-xs md:text-sm text-vintage-brown/80">
+                {couple.brideParents}
             </p>
           </div>
 
           <p className="font-sans text-vintage-brown/80 leading-relaxed text-sm md:text-base max-w-md mx-auto md:ml-auto italic">
-            "Wanita penyabar yang selalu percaya bahwa cinta sejati itu tumbuh dari ketulusan hati dan kesetiaan yang diuji oleh waktu."
+            "Wanita penyabar yang selalu percaya bahwa cinta sejati itu tumbuh dari ketulusan hati."
           </p>
           
           <div className="pt-2 flex justify-center md:justify-end">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-vintage-gold hover:text-vintage-brown transition-colors flex items-center gap-2 text-[10px] md:text-xs tracking-widest uppercase border-b border-transparent hover:border-vintage-brown pb-1">
-                @lestykejora <Instagram size={14} />
+            <a href={couple.brideInstagram} target="_blank" rel="noopener noreferrer" className="text-vintage-gold hover:text-vintage-brown transition-colors flex items-center gap-2 text-[10px] md:text-xs tracking-widest uppercase border-b border-transparent hover:border-vintage-brown pb-1">
+                Instagram <Instagram size={14} />
             </a>
           </div>
         </motion.div>

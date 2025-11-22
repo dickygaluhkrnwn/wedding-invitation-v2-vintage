@@ -3,10 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
-export default function VintageCountdown() {
-  // Target: 24 Agustus 2025 (Sesuai data di page.tsx)
-  const weddingDate = new Date("2025-08-24T08:00:00").getTime();
-  
+// Props untuk menerima tanggal dari database
+interface VintageCountdownProps {
+  targetDate: Date;
+}
+
+export default function VintageCountdown({ targetDate }: VintageCountdownProps) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -15,12 +17,16 @@ export default function VintageCountdown() {
   });
 
   useEffect(() => {
+    // Menggunakan tanggal dari props, bukan hardcoded lagi
+    const targetTime = targetDate.getTime();
+
     const interval = setInterval(() => {
       const now = new Date().getTime();
-      const distance = weddingDate - now;
+      const distance = targetTime - now;
 
       if (distance < 0) {
         clearInterval(interval);
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       } else {
         setTimeLeft({
           days: Math.floor(distance / (1000 * 60 * 60 * 24)),
@@ -32,7 +38,7 @@ export default function VintageCountdown() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [weddingDate]);
+  }, [targetDate]);
 
   // Komponen Angka
   const TimeUnit = ({ value, label }: { value: number; label: string }) => (

@@ -3,13 +3,24 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+// Import tipe data untuk props
+import { InvitationData } from '@/lib/invitation';
 
 interface OpeningEnvelopeProps {
   onOpen: () => void;
+  couple: InvitationData['couple'];
+  date: Date;
 }
 
-export default function OpeningEnvelope({ onOpen }: OpeningEnvelopeProps) {
+export default function OpeningEnvelope({ onOpen, couple, date }: OpeningEnvelopeProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Format Tanggal Dinamis: 24 . 08 . 2025
+  const dateString = date.toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  }).replace(/\//g, ' . ');
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -51,15 +62,17 @@ export default function OpeningEnvelope({ onOpen }: OpeningEnvelopeProps) {
                 <p className="font-serif text-[8px] md:text-xs tracking-[0.3em] text-vintage-olive uppercase mb-2">The Wedding Of</p>
                 
                 <div className="relative py-1">
-                    <h1 className="font-script text-4xl md:text-7xl text-vintage-brown whitespace-nowrap leading-none">
-                        Rizky & Lesti
+                    <h1 className="font-script text-4xl md:text-6xl lg:text-7xl text-vintage-brown whitespace-nowrap leading-none">
+                        {/* Menggunakan Data Dinamis */}
+                        {couple.groomNickname} & {couple.brideNickname}
                     </h1>
                 </div>
 
                 <div className="flex items-center justify-center gap-3 opacity-70 w-full mt-2 md:mt-4">
                     <div className="w-6 md:w-12 h-[1px] bg-vintage-gold" />
                     <p className="font-serif text-[8px] md:text-sm text-vintage-brown tracking-widest font-bold">
-                        24 . 08 . 2025
+                        {/* Menggunakan Tanggal Dinamis */}
+                        {dateString}
                     </p>
                     <div className="w-6 md:w-12 h-[1px] bg-vintage-gold" />
                 </div>

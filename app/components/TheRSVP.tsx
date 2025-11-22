@@ -1,20 +1,112 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Check } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { 
+  collection, 
+  addDoc, 
+  query, 
+  orderBy, 
+  onSnapshot, 
+  serverTimestamp,
+  Timestamp 
+} from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+
+// Tipe data untuk Tamu sesuai schema database
+interface Guest {
+  id: string;
+  name: string;
+  attendance: string;
+  message: string;
+  createdAt: Timestamp;
+}
 
 export default function TheRSVP() {
-  const [form, setForm] = useState({ name: '', attendance: 'Hadir', message: '' });
-  const [isSent, setIsSent] = useState(false);
+  // Mengambil slug dari URL untuk menentukan kita ada di undangan siapa (misal: 'romeo-juliet')
+  const params = useParams();
+  const slug = params.slug as string; 
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [form, setForm] = useState({ name: '', attendance: 'Hadir', message: '' });
+  const [isSending, setIsSending] = useState(false); // State loading saat kirim
+  const [isSent, setIsSent] = useState(false);
+  const [guests, setGuests] = useState<Guest[]>([]); // State untuk menampung data ucapan
+
+  // --- 1. REAL-TIME LISTENER ---
+  // Fungsi ini akan berjalan otomatis setiap ada perubahan data di database
+  useEffect(() => {
+    if (!slug) return;
+
+    // Referensi ke sub-collection 'guests' di dalam dokumen undangan spesifik
+    const guestsRef = collection(db, 'invitations', slug, 'guests');
+    
+    // Query: Ambil semua tamu, urutkan dari yang terbaru (descending)
+    const q = query(guestsRef, orderBy('createdAt', 'desc'));
+
+    // Pasang listener (onSnapshot)
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const guestsData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Guest[];
+      
+      setGuests(guestsData);
+    });
+
+    // Bersihkan listener saat komponen tidak aktif
+    return () => unsubscribe();
+  }, [slug]);
+
+  // --- 2. HANDLE SUBMIT ---
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSent(true);
-    setTimeout(() => {
+    
+    // Validasi sederhana
+    if (!slug || !form.name || !form.message) return;
+
+    setIsSending(true);
+
+    try {
+      // Simpan data ke Firestore
+      await addDoc(collection(db, 'invitations', slug, 'guests'), {
+        name: form.name,
+        attendance: form.attendance,
+        message: form.message,
+        // serverTimestamp() digunakan agar waktu konsisten sesuai server Google
+        createdAt: serverTimestamp(), 
+      });
+
+      // Reset Form & Tampilkan Feedback Sukses
+      setIsSent(true);
+      setForm({ name: '', attendance: 'Hadir', message: '' });
+      
+      // Kembalikan tombol ke status awal setelah 3 detik
+      setTimeout(() => {
         setIsSent(false);
-        setForm({ name: '', attendance: 'Hadir', message: '' });
-    }, 3000);
+        setIsSending(false);
+      }, 3000);
+
+    } catch (error) {
+      console.error("Error submit RSVP:", error);
+      alert("Gagal mengirim pesan. Periksa koneksi internet Anda.");
+      setIsSending(false);
+    }
+  };
+
+  // Helper: Format waktu (misal: "5 menit yang lalu")
+  const formatTime = (timestamp: Timestamp) => {
+    if (!timestamp) return '';
+    // Konversi Timestamp Firestore ke Date Javascript
+    const date = timestamp.toDate(); 
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return 'Baru saja';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} menit yang lalu`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} jam yang lalu`;
+    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
   };
 
   return (
@@ -43,7 +135,7 @@ export default function TheRSVP() {
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="relative p-8 md:p-10 bg-[#f4f1ea] shadow-lg border border-vintage-brown/20"
+            className="relative p-8 md:p-10 bg-[#f4f1ea] shadow-lg border border-vintage-brown/20 h-fit"
         >
             {/* Efek Kertas Terlipat di Pojok */}
             <div className="absolute top-0 right-0 border-t-[30px] border-r-[30px] border-t-white/50 border-r-vintage-brown/10 shadow-sm" />
@@ -58,6 +150,7 @@ export default function TheRSVP() {
                         onChange={(e) => setForm({...form, name: e.target.value})}
                         className="w-full bg-transparent border-b-2 border-vintage-brown/30 focus:border-vintage-gold outline-none py-2 text-vintage-brown placeholder:text-vintage-brown/30 transition-colors"
                         placeholder="Tulis nama Anda di sini..."
+                        disabled={isSending}
                     />
                 </div>
 
@@ -78,6 +171,7 @@ export default function TheRSVP() {
                                     value={opt} 
                                     onChange={() => setForm({...form, attendance: opt})}
                                     className="hidden" 
+                                    disabled={isSending}
                                 />
                             </label>
                         ))}
@@ -94,15 +188,18 @@ export default function TheRSVP() {
                         className="w-full bg-transparent border-b-2 border-vintage-brown/30 focus:border-vintage-gold outline-none py-2 text-vintage-brown placeholder:text-vintage-brown/30 transition-colors resize-none"
                         placeholder="Tuliskan doa terbaik untuk kami..."
                         style={{ backgroundImage: "linear-gradient(transparent, transparent 31px, rgba(146, 100, 81, 0.1) 31px)", backgroundSize: "100% 32px", lineHeight: "32px" }}
+                        disabled={isSending}
                     />
                 </div>
 
                 <button 
-                    disabled={isSent}
+                    disabled={isSending || isSent}
                     className="w-full py-4 border border-vintage-brown text-vintage-brown hover:bg-vintage-brown hover:text-vintage-cream transition-all duration-500 font-serif tracking-[0.2em] text-xs uppercase flex items-center justify-center gap-3 group disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                     {isSent ? (
                         <>Terkirim <Check size={16} /></>
+                    ) : isSending ? (
+                        <span className="animate-pulse">Mengirim...</span>
                     ) : (
                         <>Kirim Pesan <Send size={16} className="group-hover:translate-x-1 transition-transform" /></>
                     )}
@@ -110,33 +207,47 @@ export default function TheRSVP() {
             </form>
         </motion.div>
 
-        {/* --- KOLOM KANAN: DINDING UCAPAN (Sticky Notes) --- */}
+        {/* --- KOLOM KANAN: DINDING UCAPAN (Data Real-time) --- */}
         <div className="space-y-6">
-            <h3 className="font-script text-4xl text-vintage-brown text-center md:text-left">Doa Kerabat</h3>
+            <h3 className="font-script text-4xl text-vintage-brown text-center md:text-left">Doa Kerabat ({guests.length})</h3>
             
-            <div className="h-[500px] overflow-y-auto pr-4 space-y-6 custom-scrollbar">
-                {/* Dummy Wishes */}
-                {[1, 2, 3, 4].map((i) => (
-                    <motion.div 
-                        key={i}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.1 }}
-                        viewport={{ once: true }}
-                        className={`p-6 shadow-md border border-vintage-brown/10 relative ${i % 2 === 0 ? 'bg-[#fcfbf7] rotate-1' : 'bg-[#f4f1ea] -rotate-1'}`}
-                    >
-                        {/* Paku/Pin di atas */}
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-vintage-gold shadow-sm border border-vintage-brown/30" />
-                        
-                        <p className="font-serif text-vintage-brown italic text-sm leading-relaxed mb-4">
-                            "Selamat menempuh hidup baru Rizky & Lesti! Semoga menjadi keluarga sakinah, mawaddah, warahmah. Aamiin."
-                        </p>
-                        <div className="flex justify-between items-end border-t border-vintage-brown/10 pt-2">
-                            <span className="font-bold text-xs uppercase tracking-widest text-vintage-brown">Teman SMA</span>
-                            <span className="text-[10px] text-vintage-olive italic">2 jam yang lalu</span>
-                        </div>
-                    </motion.div>
-                ))}
+            <div className="h-[600px] overflow-y-auto pr-4 space-y-6 custom-scrollbar pb-10">
+                {/* State Kosong */}
+                {guests.length === 0 ? (
+                    <div className="text-center py-10 text-vintage-olive opacity-60 italic bg-[#f9f7f2] p-6 border border-vintage-brown/10 rounded-sm">
+                        <p>"Belum ada ucapan. Jadilah yang pertama mendoakan kami!"</p>
+                    </div>
+                ) : (
+                    /* Mapping Data Tamu */
+                    guests.map((guest, i) => (
+                        <motion.div 
+                            key={guest.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                            viewport={{ once: true }}
+                            className={`p-6 shadow-md border border-vintage-brown/10 relative ${i % 2 === 0 ? 'bg-[#fcfbf7] rotate-1' : 'bg-[#f4f1ea] -rotate-1'}`}
+                        >
+                            {/* Paku/Pin di atas */}
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-vintage-gold shadow-sm border border-vintage-brown/30" />
+                            
+                            <p className="font-serif text-vintage-brown italic text-sm leading-relaxed mb-4 break-words">
+                                "{guest.message}"
+                            </p>
+                            <div className="flex justify-between items-end border-t border-vintage-brown/10 pt-2">
+                                <div className="flex flex-col">
+                                    <span className="font-bold text-xs uppercase tracking-widest text-vintage-brown">{guest.name}</span>
+                                    <span className={`text-[10px] font-bold ${guest.attendance === 'Hadir' ? 'text-green-700' : 'text-red-700'}`}>
+                                        {guest.attendance}
+                                    </span>
+                                </div>
+                                <span className="text-[10px] text-vintage-olive italic">
+                                    {formatTime(guest.createdAt)}
+                                </span>
+                            </div>
+                        </motion.div>
+                    ))
+                )}
             </div>
         </div>
 

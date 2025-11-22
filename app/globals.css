@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 :root {
-  /* --- PALET WARNA VINTAGE 09 --- */
+  /* --- PALET WARNA VINTAGE 09 (Updated agar lebih fresh) --- */
   --foreground-rgb: 92, 64, 51; /* Vintage Brown */
-  --background-start-rgb: 249, 245, 235; /* Cream Paper */
-  --background-end-rgb: 238, 229, 210; /* Aged Paper */
+  --background-start-rgb: 253, 251, 247; /* Lighter Cream */
+  --background-end-rgb: 245, 240, 225; /* Soft Aged Paper */
   
   --color-vintage-gold: #C5A059;
   --color-vintage-olive: #73785C;
@@ -21,6 +21,7 @@ body {
     )
     rgb(var(--background-start-rgb));
   min-height: 100vh;
+  overflow-x: hidden; /* Mencegah scroll horizontal tidak sengaja */
 }
 
 /* LAYER: Paper Texture Overlay (REAL IMAGE) */
@@ -35,13 +36,14 @@ body::before {
   background-image: url("/images/vintage/paper-texture.png");
   /* Mengatur agar texture repeat dengan halus */
   background-repeat: repeat;
-  background-size: 500px; 
-  opacity: 0.5; /* Sesuaikan opacity agar tidak terlalu gelap */
+  background-size: 300px; 
+  opacity: 0.4; /* Opacity dikurangi sedikit agar konten lebih jelas */
   pointer-events: none;
   z-index: -1;
   mix-blend-mode: multiply;
 }
 
+/* --- CUSTOM UTILITIES & ANIMATIONS --- */
 @layer utilities {
   .text-shadow-vintage {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
@@ -50,4 +52,56 @@ body::before {
   .font-script {
     font-family: var(--font-pinyon), cursive;
   }
+
+  /* Custom Scrollbar yang rapi */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.05);
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(92, 64, 51, 0.2);
+    border-radius: 10px;
+  }
+
+  /* Animasi Halus (Smooth Reveal) */
+  .animate-fade-up {
+    animation: fadeUp 1s ease-out forwards;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 1.5s ease-out forwards;
+  }
+
+  /* Efek melayang untuk ornamen */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+}
+
+/* --- KEYFRAMES ANIMATION --- */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }

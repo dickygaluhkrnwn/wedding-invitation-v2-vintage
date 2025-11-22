@@ -5,8 +5,18 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { MapPin, Clock } from 'lucide-react';
 import VintageCountdown from './VintageCountdown';
+// Import tipe data
+import { InvitationData } from '@/lib/invitation';
 
-export default function TheEvent() {
+interface TheEventProps {
+  event: InvitationData['event'];
+}
+
+export default function TheEvent({ event }: TheEventProps) {
+  // Convert Timestamp Firestore ke Date Object
+  // Karena di props 'event.date' adalah object { seconds, nanoseconds }
+  const eventDate = new Date(event.date.seconds * 1000);
+
   return (
     <section className="py-24 px-6 w-full max-w-7xl mx-auto space-y-20 bg-vintage-cream relative">
       
@@ -32,8 +42,9 @@ export default function TheEvent() {
         </p>
       </div>
 
-      {/* --- COUNTDOWN --- */}
-      <VintageCountdown />
+      {/* --- COUNTDOWN DINAMIS --- */}
+      {/* Mengirimkan tanggal event ke komponen countdown */}
+      <VintageCountdown targetDate={eventDate} />
 
       {/* --- CARDS CONTAINER --- */}
       <div className="grid md:grid-cols-2 gap-12 pt-8">
@@ -41,53 +52,38 @@ export default function TheEvent() {
         {/* KARTU 1: AKAD NIKAH */}
         <VintageCard 
           title="Akad Nikah"
-          time="08:00 - 10:00 WIB"
-          location="Masjid Agung Al-Azhar"
-          address="Jl. Sisingamangaraja, Kebayoran Baru, Jakarta Selatan"
+          time={event.akadTime}
+          location={event.akadLocation}
+          address={event.akadAddress}
           imgPattern="opacity-10"
           delay={0.2}
+          mapsUrl={event.akadMapsUrl}
         />
 
         {/* KARTU 2: RESEPSI */}
         <VintageCard 
           title="Resepsi"
-          time="11:00 - 13:00 WIB"
-          location="Glass House Ballroom"
-          address="Jl. Sudirman Kav 52-53, Jakarta Selatan"
+          time={event.resepsiTime}
+          location={event.resepsiLocation}
+          address={event.resepsiAddress}
           imgPattern="opacity-10"
           delay={0.4}
+          mapsUrl={event.resepsiMapsUrl}
         />
 
       </div>
 
-      {/* Peta Button */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        className="text-center pt-8"
-      >
-        <a 
-          href="https://goo.gl/maps/placeholder" 
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group inline-flex flex-col items-center gap-2"
-        >
-          <div className="w-12 h-12 rounded-full border border-vintage-brown flex items-center justify-center group-hover:bg-vintage-brown group-hover:text-vintage-cream transition-all duration-500">
-            <MapPin size={20} />
-          </div>
-          <span className="font-serif text-xs tracking-[0.2em] uppercase border-b border-transparent group-hover:border-vintage-brown transition-all">
-            Lihat Lokasi Google Maps
-          </span>
-        </a>
-      </motion.div>
+      {/* Peta Button Global (Optional, jika ingin ada satu tombol maps utama) */}
+      {/* Kita hilangkan karena sudah ada tombol maps spesifik di tiap kartu */}
+      {/* <motion.div ... > ... </motion.div> 
+      */}
 
     </section>
   );
 }
 
 // --- KOMPONEN KARTU VINTAGE ---
-function VintageCard({ title, time, location, address, delay }: any) {
+function VintageCard({ title, time, location, address, delay, mapsUrl }: any) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 50 }}
@@ -129,10 +125,15 @@ function VintageCard({ title, time, location, address, delay }: any) {
                 </p>
             </div>
 
-            {/* Tombol Simpan (Outline) */}
-            <button className="mt-8 px-6 py-2 border border-vintage-brown/40 text-[10px] tracking-[0.2em] uppercase hover:bg-vintage-brown hover:text-vintage-cream transition-colors duration-300">
-                Simpan Tanggal
-            </button>
+            {/* Tombol Maps Dinamis */}
+            <a 
+                href={mapsUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="mt-8 px-6 py-2 border border-vintage-brown/40 text-[10px] tracking-[0.2em] uppercase hover:bg-vintage-brown hover:text-vintage-cream transition-colors duration-300 inline-flex items-center gap-2"
+            >
+                <MapPin size={14} /> Lihat Lokasi
+            </a>
 
         </div>
       </div>

@@ -9,6 +9,13 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      // Menambahkan domain Firebase Storage agar foto dinamis dari database bisa dimuat
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

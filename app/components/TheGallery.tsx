@@ -5,111 +5,112 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ZoomIn } from 'lucide-react';
 
-// Data Foto Dummy (Nanti ganti dengan path lokal kamu)
-const memories = [
-  { src: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop", rotate: "rotate-2", caption: "First Date" },
-  { src: "https://images.unsplash.com/photo-1511285560982-1356c11d4606?q=80&w=800&auto=format&fit=crop", rotate: "-rotate-3", caption: "The Proposal" },
-  { src: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=800&auto=format&fit=crop", rotate: "rotate-1", caption: "Prewedding 1" },
-  { src: "https://images.unsplash.com/photo-1520854221256-17451cc330e7?q=80&w=800&auto=format&fit=crop", rotate: "-rotate-2", caption: "Prewedding 2" },
-  { src: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?q=80&w=800&auto=format&fit=crop", rotate: "rotate-3", caption: "Our Journey" },
-  { src: "https://images.unsplash.com/photo-1529636798458-92182e662485?q=80&w=800&auto=format&fit=crop", rotate: "-rotate-1", caption: "Forever" },
-];
+// Menerima props gallery (array URL) dari InvitationClient
+interface TheGalleryProps {
+  gallery: string[]; 
+}
 
-export default function TheGallery() {
+export default function TheGallery({ gallery }: TheGalleryProps) {
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
+
+  // Jika tidak ada foto, sembunyikan section
+  if (!gallery || gallery.length === 0) return null;
 
   return (
     <section className="py-24 px-6 w-full max-w-7xl mx-auto relative">
       
+      {/* Ornamen Bunga Gantung (Animasi Float) */}
+      <div className="absolute top-0 right-0 w-32 h-32 opacity-20 pointer-events-none animate-float">
+         <Image src="/images/vintage/flower-corner.png" alt="decor" fill className="object-contain rotate-180" />
+      </div>
+
       {/* Judul Section */}
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
         viewport={{ once: true }}
-        className="text-center mb-16 space-y-4"
+        className="text-center mb-16 space-y-4 relative z-10"
       >
         <h2 className="font-serif text-3xl md:text-5xl text-vintage-brown uppercase tracking-widest">
-          Kenangan Manis
+          Galeri Momen
         </h2>
-        <div className="w-24 h-[2px] bg-vintage-gold mx-auto" />
-        <p className="font-sans text-vintage-olive italic text-sm">
-          "Setiap detik bersamamu adalah memori yang tak ingin kulupakan."
+        <div className="flex justify-center items-center gap-4">
+            <div className="h-[1px] w-12 bg-vintage-gold/50" />
+            <Image src="/images/vintage/wax-seal.png" alt="icon" width={24} height={24} className="opacity-60" />
+            <div className="h-[1px] w-12 bg-vintage-gold/50" />
+        </div>
+        <p className="font-sans text-vintage-olive italic text-sm max-w-lg mx-auto">
+          "Merekam setiap detik kebahagiaan dalam bingkai kenangan abadi."
         </p>
       </motion.div>
 
-      {/* --- SCRAPBOOK GRID --- */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 px-4">
-        {memories.map((item, index) => (
+      {/* --- MASONRY LAYOUT (Solusi untuk Zoom/Crop Issue) --- */}
+      {/* columns-1 (HP), columns-2 (Tablet), columns-3 (PC) */}
+      <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 px-2 md:px-8">
+        {gallery.map((src, index) => (
           <motion.div
             key={index}
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: index * 0.1 }}
             viewport={{ once: true }}
-            whileHover={{ 
-              scale: 1.05, 
-              rotate: 0, 
-              zIndex: 10,
-              transition: { duration: 0.3 } 
-            }}
-            className={`relative group cursor-pointer p-3 pb-12 bg-white shadow-lg border border-gray-200 transform ${item.rotate} transition-all duration-500`}
-            onClick={() => setSelectedImg(item.src)}
+            // break-inside-avoid: Mencegah gambar terpotong antar kolom
+            className="break-inside-avoid group relative cursor-pointer rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 mb-6"
+            onClick={() => setSelectedImg(src)}
           >
-            {/* Efek Tape (Selotip) di atas foto - Opsional */}
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-8 bg-yellow-100/50 rotate-1 opacity-80 z-20 shadow-sm backdrop-blur-[1px]" />
-
-            {/* Bingkai Foto */}
-            <div className="relative w-full aspect-[4/5] overflow-hidden bg-gray-100">
+            {/* Image Container - Tanpa fixed aspect ratio agar natural */}
+            <div className="relative w-full">
               <Image
-                src={item.src}
-                alt={`Memory ${index + 1}`}
-                fill
-                className="object-cover sepia-[0.4] group-hover:sepia-0 transition-all duration-500"
+                src={src}
+                alt={`Gallery ${index + 1}`}
+                width={800}
+                height={1200} // Aspect ratio bebas, Next/Image akan menyesuaikan
+                className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
               
-              {/* Overlay Icon */}
-              <div className="absolute inset-0 bg-vintage-brown/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
-                <ZoomIn className="text-white drop-shadow-md" size={32} />
+              {/* Elegant Overlay saat Hover */}
+              <div className="absolute inset-0 bg-vintage-brown/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                <div className="bg-white/20 backdrop-blur-sm p-3 rounded-full border border-white/50 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                    <ZoomIn className="text-white" size={24} />
+                </div>
               </div>
-            </div>
-
-            {/* Caption Tulisan Tangan */}
-            <div className="absolute bottom-2 left-0 w-full text-center">
-              <p className="font-script text-2xl text-vintage-brown/80">
-                {item.caption}
-              </p>
             </div>
           </motion.div>
         ))}
       </div>
 
-      {/* LIGHTBOX (Popup) */}
+      {/* LIGHTBOX (Fullscreen Viewer) */}
       <AnimatePresence>
         {selectedImg && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-vintage-brown/90 backdrop-blur-sm flex items-center justify-center p-4"
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[100] bg-vintage-brown/95 backdrop-blur-md flex items-center justify-center p-4"
             onClick={() => setSelectedImg(null)}
           >
-            <button className="absolute top-6 right-6 text-vintage-cream hover:text-white transition-colors bg-white/10 p-2 rounded-full">
+            <button className="absolute top-6 right-6 text-white/80 hover:text-white transition-colors bg-white/10 p-2 rounded-full hover:rotate-90 duration-300 z-50">
               <X size={32} />
             </button>
 
             <motion.div
-              initial={{ scale: 0.8, rotate: -2 }}
-              animate={{ scale: 1, rotate: 0 }}
-              exit={{ scale: 0.8, rotate: 2 }}
-              className="relative w-full max-w-4xl max-h-[85vh] p-4 bg-white shadow-2xl rounded-sm"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="relative w-full max-w-5xl max-h-[90vh] flex items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="relative w-full h-[60vh] md:h-[80vh]">
-                <Image 
-                  src={selectedImg}
-                  alt="Full Size"
-                  fill
-                  className="object-contain"
+              {/* Container Gambar Utuh di Lightbox */}
+              <div className="relative w-auto h-auto max-w-full max-h-[85vh] shadow-2xl border-4 border-white/10 rounded-sm overflow-hidden">
+                {/* Menggunakan tag img biasa di lightbox agar resolusi asli & aspek rasio terjaga sempurna */}
+                <img 
+                  src={selectedImg} 
+                  alt="Full Preview"
+                  className="max-w-full max-h-[85vh] object-contain"
                 />
               </div>
             </motion.div>

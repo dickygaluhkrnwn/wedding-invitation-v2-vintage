@@ -4,8 +4,14 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Copy, Check, Gift } from 'lucide-react';
+// Import tipe data
+import { InvitationData } from '@/lib/invitation';
 
-export default function TheGift() {
+interface TheGiftProps {
+  gift: InvitationData['gift'];
+}
+
+export default function TheGift({ gift }: TheGiftProps) {
   return (
     <section className="py-24 px-6 w-full max-w-4xl mx-auto mb-20">
       
@@ -22,18 +28,23 @@ export default function TheGift() {
 
       {/* Kartu Bank (Tampilan Amplop) */}
       <div className="grid md:grid-cols-2 gap-10">
-        <BankEnvelope 
-            bank="BCA" 
-            number="1234567890" 
-            name="Rizky Billar" 
-            delay={0}
-        />
-        <BankEnvelope 
-            bank="MANDIRI" 
-            number="0987654321" 
-            name="Lesti Kejora" 
-            delay={0.2}
-        />
+        {/* Render hanya jika data bank ada */}
+        {gift.bank1Name && gift.bank1Number && (
+            <BankEnvelope 
+                bank={gift.bank1Name} 
+                number={gift.bank1Number} 
+                name={gift.bank1Holder} 
+                delay={0}
+            />
+        )}
+        {gift.bank2Name && gift.bank2Number && (
+            <BankEnvelope 
+                bank={gift.bank2Name} 
+                number={gift.bank2Number} 
+                name={gift.bank2Holder} 
+                delay={0.2}
+            />
+        )}
       </div>
 
       {/* Gift Box Icon */}
@@ -49,9 +60,29 @@ function BankEnvelope({ bank, number, name, delay }: any) {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(number);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        // Cara modern copy to clipboard
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+             navigator.clipboard.writeText(number).then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+             }).catch((err) => {
+                 console.error("Gagal copy:", err);
+             });
+        } else {
+             // Fallback untuk browser lama / iframe
+             const textArea = document.createElement("textarea");
+             textArea.value = number;
+             document.body.appendChild(textArea);
+             textArea.select();
+             try {
+                document.execCommand("copy");
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+             } catch (err) {
+                console.error("Fallback copy gagal", err);
+             }
+             document.body.removeChild(textArea);
+        }
     };
 
     return (
