@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import Image from 'next/image'; // Import Image Next.js
+import Image from 'next/image';
 
 interface OpeningEnvelopeProps {
   onOpen: () => void;
@@ -15,98 +15,133 @@ export default function OpeningEnvelope({ onOpen }: OpeningEnvelopeProps) {
     setIsOpen(true);
     setTimeout(() => {
       onOpen();
-    }, 2000); 
+    }, 2200);
   };
 
   return (
     <motion.div
       initial={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 1, delay: 0.5 } }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-vintage-cream overflow-hidden perspective-1000"
+      // FIX 1: Menggunakan h-[100dvh] agar pas di layar HP dengan address bar
+      // z-[100] agar di atas segalanya
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-vintage-cream overflow-hidden"
+      style={{ height: '100dvh' }} 
     >
-      <div className="relative w-[90vw] max-w-md aspect-[4/3] md:aspect-[16/9] flex items-end justify-center">
+      {/* Background Texture Overlay */}
+      <div className="absolute inset-0 pointer-events-none opacity-40 bg-[url('/images/vintage/paper-texture.png')] mix-blend-multiply" />
+
+      {/* CONTAINER AMPLOP UTAMA 
+         - FIX 2: w-[90vw] untuk mobile, max-w-[600px] untuk desktop.
+         - mx-auto: Memastikan container di tengah horizontal.
+         - aspect-[1.6/1]: Menjaga bentuk amplop tetap persegi panjang ideal (C6 size).
+      */}
+      <div className="relative w-[90vw] max-w-[600px] aspect-[1.6/1] flex items-end justify-center perspective-1000 mx-auto">
         
-        {/* 1. ISI SURAT */}
+        {/* --- 1. ISI SURAT (Invitation Card) --- */}
         <motion.div
-          className="absolute bottom-0 w-[90%] h-[85%] bg-[#f7f5f0] shadow-md border border-vintage-brown/10 p-6 text-center flex flex-col items-center justify-start pt-8 z-15"
-          initial={{ y: 0 }}
-          animate={isOpen ? { y: -180, zIndex: 25 } : { y: 0 }}
-          transition={{ duration: 1.2, delay: 0.6, ease: "easeInOut" }}
+          // FIX 3: left-1/2 -translate-x-1/2 ADALAH KUNCI AGAR TIDAK CONDONG KIRI
+          className="absolute w-[92%] h-[90%] bg-[#f9f7f2] shadow-md border border-vintage-brown/20 p-4 md:p-8 text-center flex flex-col items-center justify-start pt-6 md:pt-10 z-10 left-1/2 top-auto bottom-0"
+          initial={{ y: 0, x: "-50%" }} // Posisi awal di dalam
+          animate={isOpen ? { y: "-60%", x: "-50%", zIndex: 5 } : { y: 0, x: "-50%" }} // Posisi akhir naik ke atas
+          transition={{ duration: 1.5, delay: 0.3, ease: "easeInOut" }}
         >
-          <p className="font-serif text-[10px] md:text-xs tracking-[0.3em] text-vintage-olive uppercase mb-3">The Wedding Of</p>
-          <h1 className="font-script text-3xl md:text-5xl text-vintage-brown mb-2">Rizky & Lesti</h1>
-          <div className="w-12 h-[1px] bg-vintage-gold my-3" />
-          <p className="font-serif text-xs md:text-sm text-vintage-brown">24 . 08 . 2025</p>
+            <div className="absolute inset-0 opacity-30 bg-[url('/images/vintage/paper-texture.png')] bg-cover pointer-events-none" />
+            
+            <div className="relative z-10 flex flex-col items-center w-full h-full">
+                <p className="font-serif text-[8px] md:text-xs tracking-[0.3em] text-vintage-olive uppercase mb-2">The Wedding Of</p>
+                
+                <div className="relative py-1">
+                    <h1 className="font-script text-4xl md:text-7xl text-vintage-brown whitespace-nowrap leading-none">
+                        Rizky & Lesti
+                    </h1>
+                </div>
+
+                <div className="flex items-center justify-center gap-3 opacity-70 w-full mt-2 md:mt-4">
+                    <div className="w-6 md:w-12 h-[1px] bg-vintage-gold" />
+                    <p className="font-serif text-[8px] md:text-sm text-vintage-brown tracking-widest font-bold">
+                        24 . 08 . 2025
+                    </p>
+                    <div className="w-6 md:w-12 h-[1px] bg-vintage-gold" />
+                </div>
+            </div>
         </motion.div>
 
-        {/* 2. AMPLOP BELAKANG */}
-        <div className="absolute inset-0 bg-[#e6dfcc] border border-vintage-brown/30 rounded-b-xl shadow-2xl z-10" />
-
-        {/* 3. AMPLOP DEPAN (Pocket) */}
-        <div 
-            className="absolute bottom-0 left-0 right-0 h-[60%] bg-[#f0eadd] border-t border-vintage-brown/20 z-20 rounded-b-xl"
-            style={{ clipPath: "polygon(0 0, 50% 85%, 100% 0, 100% 100%, 0 100%)" }} 
-        >
-            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
+        {/* --- 2. AMPLOP BELAKANG --- */}
+        <div className="absolute inset-0 bg-[#dcd6c6] rounded-b-xl shadow-2xl border border-vintage-brown/30 z-20 overflow-hidden">
+             <div className="absolute inset-0 opacity-20 bg-[url('/images/vintage/paper-texture.png')] mix-blend-multiply" />
         </div>
 
-        {/* 4. TUTUP AMPLOP (Rotating Flap) */}
+        {/* --- 3. AMPLOP DEPAN (Pocket) --- */}
+        <div 
+            className="absolute bottom-0 left-0 right-0 h-[55%] bg-[#e6dfcc] z-30 rounded-b-xl border-t border-white/20 shadow-lg"
+            style={{ clipPath: "polygon(0 0, 50% 25%, 100% 0, 100% 100%, 0 100%)" }} 
+        >
+            <div className="absolute inset-0 opacity-30 bg-[url('/images/vintage/paper-texture.png')] mix-blend-multiply" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none opacity-50" />
+        </div>
+
+        {/* --- 4. TUTUP AMPLOP (Flap) --- */}
         <motion.div
-            className="absolute top-0 left-0 right-0 h-[60%] origin-top z-30"
+            className="absolute top-0 left-0 right-0 h-[55%] origin-top z-40"
             initial={{ rotateX: 0 }}
             animate={isOpen ? { rotateX: 180, zIndex: 1 } : { rotateX: 0 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
             style={{ transformStyle: 'preserve-3d' }}
         >
-            {/* Kertas Tutup */}
+            {/* Sisi Luar */}
             <div 
-                className="absolute inset-0 bg-[#eaddcf] border-b border-vintage-brown/20 shadow-sm backface-hidden"
-                style={{ clipPath: "polygon(0 0, 50% 85%, 100% 0)" }}
-            />
+                className="absolute inset-0 bg-[#efe8dc] backface-hidden border-b border-vintage-brown/10 shadow-md"
+                style={{ clipPath: "polygon(0 0, 50% 25%, 100% 0)" }}
+            >
+                 <div className="absolute inset-0 opacity-30 bg-[url('/images/vintage/paper-texture.png')] mix-blend-multiply" />
+            </div>
 
-            {/* B. REAL WAX SEAL IMAGE */}
-            <div className="absolute top-[85%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-40">
+            {/* Sisi Dalam */}
+            <div 
+                className="absolute inset-0 bg-[#dcd6c6] backface-visible"
+                style={{ 
+                    transform: "rotateX(180deg)", 
+                    clipPath: "polygon(0 0, 50% 25%, 100% 0)" 
+                }}
+            >
+                 <div className="absolute inset-0 opacity-30 bg-[url('/images/vintage/paper-texture.png')] mix-blend-multiply" />
+                 <div className="absolute top-0 w-full h-6 bg-gradient-to-b from-black/10 to-transparent" />
+            </div>
+
+            {/* --- 5. TOMBOL SEGEL (WAX SEAL) --- */}
+            <div className="absolute top-[25%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 backface-hidden">
                 {!isOpen && (
                     <motion.button
                         onClick={handleOpen}
-                        whileHover={{ scale: 1.1 }}
+                        whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className="relative group cursor-pointer flex flex-col items-center"
+                        className="group flex flex-col items-center justify-center cursor-pointer relative w-32 h-32"
                     >
-                        {/* Gambar Segel Lilin */}
-                        <div className="w-20 h-20 md:w-24 md:h-24 relative drop-shadow-xl">
+                        <div className="w-20 h-20 md:w-28 md:h-28 relative drop-shadow-xl filter brightness-105 hover:brightness-110 transition-all">
                             <Image 
                                 src="/images/vintage/wax-seal.png" 
-                                alt="Open Invitation" 
+                                alt="Buka Undangan" 
                                 fill
                                 className="object-contain"
                             />
                         </div>
-
-                        {/* Label Buka */}
-                        <div className="mt-2">
-                            <span className="bg-vintage-cream/90 px-4 py-1 text-[10px] font-serif uppercase tracking-widest border border-vintage-brown/50 rounded-full text-vintage-brown shadow-sm group-hover:bg-vintage-brown group-hover:text-vintage-cream transition-colors">
+                        
+                        <motion.div 
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 1, duration: 1, repeat: Infinity, repeatType: "reverse" }}
+                            className="absolute top-[80%] mt-1 bg-vintage-cream/90 backdrop-blur-sm px-3 py-1.5 rounded-full border border-vintage-brown/40 shadow-lg whitespace-nowrap"
+                        >
+                            <span className="text-[9px] font-serif uppercase tracking-[0.2em] text-vintage-brown font-bold">
                                 Buka Undangan
                             </span>
-                        </div>
+                        </motion.div>
                     </motion.button>
                 )}
             </div>
         </motion.div>
 
       </div>
-      
-      {!isOpen && (
-        <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 1 }}
-            className="absolute bottom-8 md:bottom-12 font-serif text-[10px] tracking-[0.3em] text-vintage-olive animate-pulse"
-        >
-            KETUK SEGEL UNTUK MEMBUKA
-        </motion.p>
-      )}
-
     </motion.div>
   );
 }

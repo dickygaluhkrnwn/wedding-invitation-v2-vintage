@@ -9,8 +9,8 @@ import TheIntro from './components/TheIntro';
 import TheCouple from './components/TheCouple'; 
 import TheEvent from './components/TheEvent'; 
 import TheGallery from './components/TheGallery'; 
-import TheRSVP from './components/TheRSVP'; // Import Baru
-import TheGift from './components/TheGift'; // Import Baru
+import TheRSVP from './components/TheRSVP';
+import TheGift from './components/TheGift';
 
 export default function Home() {
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
@@ -26,7 +26,7 @@ export default function Home() {
       
       <BackgroundMusic isPlaying={isMusicPlaying} />
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {!isEnvelopeOpen && (
           <OpeningEnvelope onOpen={handleOpenInvitation} />
         )}
@@ -36,8 +36,8 @@ export default function Home() {
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 2, delay: 0.5 }} 
-            className="relative min-h-screen flex flex-col items-center"
+            transition={{ duration: 1.5, delay: 0.2 }} 
+            className="relative w-full flex flex-col items-center"
         >
             {/* Bingkai Garis Tipis Global */}
             <div className="fixed inset-3 md:inset-6 border border-vintage-gold/30 pointer-events-none z-50 mix-blend-multiply opacity-70">
@@ -58,14 +58,14 @@ export default function Home() {
             {/* HERO SECTION */}
             <section className="min-h-screen w-full flex flex-col items-center justify-center p-8 text-center relative">
                 <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
-                    <div className="w-64 h-64 md:w-96 md:h-96 rounded-full border-[1px] border-vintage-brown animate-spin-slow" />
+                    <div className="w-64 h-64 md:w-96 md:h-96 rounded-full border-[1px] border-vintage-brown animate-[spin_10s_linear_infinite]" />
                 </div>
 
                 <div className="space-y-8 relative z-10 mt-10">
                     <p className="font-serif tracking-[0.4em] text-xs md:text-sm text-vintage-olive uppercase">The Wedding Of</p>
                     <div className="py-4 relative">
-                        <h1 className="font-script text-6xl md:text-9xl text-vintage-brown drop-shadow-sm">
-                            Rizky & Lesti
+                        <h1 className="font-script text-6xl md:text-9xl text-vintage-brown drop-shadow-sm leading-tight">
+                            Rizky <br className="md:hidden"/> & <br className="md:hidden"/> Lesti
                         </h1>
                     </div>
                     <div className="flex items-center justify-center gap-6 text-vintage-gold opacity-80">
@@ -89,13 +89,11 @@ export default function Home() {
             <TheCouple />
             <TheEvent />
             <TheGallery />
-            
-            {/* --- FASE 6: RSVP & GIFT (Baru) --- */}
             <TheRSVP />
             <TheGift />
 
             {/* Footer */}
-            <footer className="py-8 text-center text-[10px] text-vintage-olive uppercase tracking-widest opacity-50 pb-20">
+            <footer className="py-8 text-center text-[10px] text-vintage-olive uppercase tracking-widest opacity-50 pb-24">
                 © 2025 Rizky & Lesti Wedding. All Rights Reserved.
             </footer>
 
