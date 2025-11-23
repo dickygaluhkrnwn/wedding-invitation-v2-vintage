@@ -17,7 +17,6 @@ export default function VintageCountdown({ targetDate }: VintageCountdownProps) 
   });
 
   useEffect(() => {
-    // Menggunakan tanggal dari props, bukan hardcoded lagi
     const targetTime = targetDate.getTime();
 
     const interval = setInterval(() => {
@@ -40,19 +39,24 @@ export default function VintageCountdown({ targetDate }: VintageCountdownProps) 
     return () => clearInterval(interval);
   }, [targetDate]);
 
-  // Komponen Angka
+  // Komponen Angka (Updated Design)
   const TimeUnit = ({ value, label }: { value: number; label: string }) => (
-    <div className="flex flex-col items-center mx-2 md:mx-6">
-      <div className="relative p-4 md:p-6 border border-vintage-brown/30 bg-vintage-cream/50 shadow-sm min-w-[70px] md:min-w-[90px] flex items-center justify-center">
-        {/* Hiasan Sudut Kecil */}
+    <div className="flex flex-col items-center mx-2 md:mx-4">
+      <div className="relative w-[70px] h-[80px] md:w-[90px] md:h-[100px] bg-white border border-vintage-brown/20 shadow-lg flex items-center justify-center mb-2 group hover:scale-105 transition-transform duration-300">
+        {/* Sudut Dekoratif */}
         <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-vintage-gold" />
+        <div className="absolute top-1 right-1 w-2 h-2 border-t border-r border-vintage-gold" />
+        <div className="absolute bottom-1 left-1 w-2 h-2 border-b border-l border-vintage-gold" />
         <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-vintage-gold" />
         
-        <span className="font-serif text-2xl md:text-4xl text-vintage-brown font-bold">
+        {/* Texture Overlay Kecil */}
+        <div className="absolute inset-0 opacity-20 bg-paper-texture mix-blend-multiply pointer-events-none" />
+
+        <span className="font-serif text-3xl md:text-5xl text-vintage-brown font-bold z-10">
           {value < 10 ? `0${value}` : value}
         </span>
       </div>
-      <span className="mt-3 font-serif text-[10px] md:text-xs tracking-[0.2em] uppercase text-vintage-olive">
+      <span className="font-sans text-[10px] md:text-xs tracking-[0.2em] uppercase text-vintage-olive font-bold">
         {label}
       </span>
     </div>
@@ -64,14 +68,29 @@ export default function VintageCountdown({ targetDate }: VintageCountdownProps) 
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 1.5, delay: 0.5 }}
       viewport={{ once: true }}
-      className="flex flex-wrap justify-center py-8 border-y border-vintage-gold/20 w-full max-w-4xl mx-auto"
+      className="flex flex-wrap justify-center items-center py-8 w-full max-w-4xl mx-auto"
     >
       <TimeUnit value={timeLeft.days} label="Hari" />
-      <div className="h-12 w-[1px] bg-vintage-brown/20 self-center hidden md:block" />
+      
+      <div className="hidden md:flex flex-col gap-1 mx-2 opacity-40">
+         <div className="w-1 h-1 bg-vintage-brown rounded-full" />
+         <div className="w-1 h-1 bg-vintage-brown rounded-full" />
+      </div>
+
       <TimeUnit value={timeLeft.hours} label="Jam" />
-      <div className="h-12 w-[1px] bg-vintage-brown/20 self-center hidden md:block" />
+      
+      <div className="hidden md:flex flex-col gap-1 mx-2 opacity-40">
+         <div className="w-1 h-1 bg-vintage-brown rounded-full" />
+         <div className="w-1 h-1 bg-vintage-brown rounded-full" />
+      </div>
+
       <TimeUnit value={timeLeft.minutes} label="Menit" />
-      <div className="h-12 w-[1px] bg-vintage-brown/20 self-center hidden md:block" />
+      
+      <div className="hidden md:flex flex-col gap-1 mx-2 opacity-40">
+         <div className="w-1 h-1 bg-vintage-brown rounded-full" />
+         <div className="w-1 h-1 bg-vintage-brown rounded-full" />
+      </div>
+
       <TimeUnit value={timeLeft.seconds} label="Detik" />
     </motion.div>
   );

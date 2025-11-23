@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Check } from 'lucide-react';
+import { Send, Check, PenTool } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import Image from 'next/image';
 import { 
   collection, 
   addDoc, 
@@ -15,7 +16,6 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
-// Tipe data untuk Tamu sesuai schema database
 interface Guest {
   id: string;
   name: string;
@@ -25,64 +25,49 @@ interface Guest {
 }
 
 export default function TheRSVP() {
-  // Mengambil slug dari URL untuk menentukan kita ada di undangan siapa (misal: 'romeo-juliet')
   const params = useParams();
   const slug = params.slug as string; 
 
   const [form, setForm] = useState({ name: '', attendance: 'Hadir', message: '' });
-  const [isSending, setIsSending] = useState(false); // State loading saat kirim
+  const [isSending, setIsSending] = useState(false);
   const [isSent, setIsSent] = useState(false);
-  const [guests, setGuests] = useState<Guest[]>([]); // State untuk menampung data ucapan
+  const [guests, setGuests] = useState<Guest[]>([]);
 
-  // --- 1. REAL-TIME LISTENER ---
-  // Fungsi ini akan berjalan otomatis setiap ada perubahan data di database
+  // --- REAL-TIME LISTENER ---
   useEffect(() => {
     if (!slug) return;
-
-    // Referensi ke sub-collection 'guests' di dalam dokumen undangan spesifik
     const guestsRef = collection(db, 'invitations', slug, 'guests');
-    
-    // Query: Ambil semua tamu, urutkan dari yang terbaru (descending)
     const q = query(guestsRef, orderBy('createdAt', 'desc'));
 
-    // Pasang listener (onSnapshot)
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const guestsData = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       })) as Guest[];
-      
       setGuests(guestsData);
     });
 
-    // Bersihkan listener saat komponen tidak aktif
     return () => unsubscribe();
   }, [slug]);
 
-  // --- 2. HANDLE SUBMIT ---
+  // --- HANDLE SUBMIT ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validasi sederhana
     if (!slug || !form.name || !form.message) return;
 
     setIsSending(true);
 
     try {
-      // Simpan data ke Firestore
       await addDoc(collection(db, 'invitations', slug, 'guests'), {
         name: form.name,
         attendance: form.attendance,
         message: form.message,
-        // serverTimestamp() digunakan agar waktu konsisten sesuai server Google
         createdAt: serverTimestamp(), 
       });
 
-      // Reset Form & Tampilkan Feedback Sukses
       setIsSent(true);
       setForm({ name: '', attendance: 'Hadir', message: '' });
       
-      // Kembalikan tombol ke status awal setelah 3 detik
       setTimeout(() => {
         setIsSent(false);
         setIsSending(false);
@@ -95,10 +80,8 @@ export default function TheRSVP() {
     }
   };
 
-  // Helper: Format waktu (misal: "5 menit yang lalu")
   const formatTime = (timestamp: Timestamp) => {
     if (!timestamp) return '';
-    // Konversi Timestamp Firestore ke Date Javascript
     const date = timestamp.toDate(); 
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
@@ -110,61 +93,60 @@ export default function TheRSVP() {
   };
 
   return (
-    <section className="py-24 px-6 w-full max-w-5xl mx-auto space-y-20 relative">
+    <section className="py-24 px-6 w-full max-w-6xl mx-auto space-y-16 relative">
       
-      {/* Judul Section */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center space-y-4"
-      >
-        <h2 className="font-serif text-3xl md:text-5xl text-vintage-brown uppercase tracking-widest">
-          Buku Tamu
-        </h2>
-        <div className="w-24 h-[2px] bg-vintage-gold mx-auto" />
-        <p className="font-sans text-vintage-olive italic text-sm">
-          "Mohon konfirmasi kehadiran Anda dan tinggalkan pesan manis untuk kami."
+      {/* --- JUDUL SECTION --- */}
+      <div className="text-center space-y-6 relative z-10">
+        <div className="flex flex-col items-center gap-3">
+          <Image src="/images/vintage/wax-seal.png" alt="seal" width={40} height={40} className="opacity-80" />
+          <h2 className="font-serif text-3xl md:text-5xl text-vintage-brown uppercase tracking-widest border-b-2 border-vintage-gold/50 pb-4 px-8">
+            Buku Tamu
+          </h2>
+        </div>
+        <p className="font-sans text-vintage-olive max-w-xl mx-auto leading-relaxed italic text-sm">
+          "Kehadiran & doa restu Anda adalah kado terindah bagi kami. Silakan tinggalkan pesan manis di bawah ini."
         </p>
-      </motion.div>
+      </div>
 
-      <div className="grid md:grid-cols-2 gap-16">
+      <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start relative z-10">
         
-        {/* --- KOLOM KIRI: FORMULIR --- */}
+        {/* --- KOLOM KIRI: FORMULIR (Paper Style) --- */}
         <motion.div 
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="relative p-8 md:p-10 bg-[#f4f1ea] shadow-lg border border-vintage-brown/20 h-fit"
+            className="relative p-8 md:p-10 bg-[#fdfbf7] shadow-2xl border border-vintage-brown/10 transform -rotate-1"
         >
-            {/* Efek Kertas Terlipat di Pojok */}
-            <div className="absolute top-0 right-0 border-t-[30px] border-r-[30px] border-t-white/50 border-r-vintage-brown/10 shadow-sm" />
+            {/* Paper Texture Overlay */}
+            <div className="absolute inset-0 opacity-30 bg-paper-texture mix-blend-multiply pointer-events-none" />
+            
+            {/* Pin Emas */}
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 bg-gradient-to-br from-vintage-gold to-yellow-700 rounded-full shadow-md z-20 border border-white/30" />
 
-            <form onSubmit={handleSubmit} className="space-y-8 font-serif">
+            <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
+                
+                {/* Input Nama (Garis Bawah Saja) */}
                 <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-[0.2em] text-vintage-olive font-bold">Nama Lengkap</label>
+                    <label className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-vintage-brown font-bold">
+                        <PenTool size={12} /> Nama Lengkap
+                    </label>
                     <input 
                         type="text" 
                         required
                         value={form.name}
                         onChange={(e) => setForm({...form, name: e.target.value})}
-                        className="w-full bg-transparent border-b-2 border-vintage-brown/30 focus:border-vintage-gold outline-none py-2 text-vintage-brown placeholder:text-vintage-brown/30 transition-colors"
-                        placeholder="Tulis nama Anda di sini..."
+                        className="w-full bg-transparent border-b-2 border-vintage-brown/20 focus:border-vintage-gold outline-none py-3 text-vintage-brown placeholder:text-vintage-brown/30 transition-all font-serif text-lg"
+                        placeholder="Tulis nama Anda..."
                         disabled={isSending}
                     />
                 </div>
 
-                <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-[0.2em] text-vintage-olive font-bold">Kehadiran</label>
-                    <div className="flex gap-6 pt-2">
+                {/* Kehadiran (Radio Button Custom) */}
+                <div className="space-y-3">
+                    <label className="text-xs uppercase tracking-[0.2em] text-vintage-brown font-bold">Konfirmasi Kehadiran</label>
+                    <div className="flex flex-wrap gap-4">
                         {['Hadir', 'Maaf, Tidak'].map((opt) => (
-                            <label key={opt} className="flex items-center gap-3 cursor-pointer group">
-                                <div className={`w-5 h-5 rounded-full border border-vintage-brown flex items-center justify-center ${form.attendance === opt ? 'bg-vintage-brown' : ''}`}>
-                                    {form.attendance === opt && <div className="w-2 h-2 bg-vintage-cream rounded-full" />}
-                                </div>
-                                <span className={`text-sm uppercase tracking-widest transition-colors ${form.attendance === opt ? 'text-vintage-brown font-bold' : 'text-vintage-olive group-hover:text-vintage-brown'}`}>
-                                    {opt}
-                                </span>
+                            <label key={opt} className={`cursor-pointer px-6 py-2 border transition-all duration-300 flex items-center gap-2 relative overflow-hidden group ${form.attendance === opt ? 'border-vintage-gold bg-vintage-gold/10 text-vintage-brown' : 'border-vintage-brown/20 text-vintage-olive hover:border-vintage-gold/50'}`}>
                                 <input 
                                     type="radio" 
                                     name="attendance" 
@@ -173,77 +155,95 @@ export default function TheRSVP() {
                                     className="hidden" 
                                     disabled={isSending}
                                 />
+                                {form.attendance === opt && <Check size={14} className="text-vintage-brown" />}
+                                <span className="uppercase text-xs tracking-widest font-bold">{opt}</span>
                             </label>
                         ))}
                     </div>
                 </div>
 
+                {/* Pesan (Efek Kertas Bergaris) */}
                 <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-[0.2em] text-vintage-olive font-bold">Pesan & Doa</label>
-                    <textarea 
-                        rows={4}
-                        required
-                        value={form.message}
-                        onChange={(e) => setForm({...form, message: e.target.value})}
-                        className="w-full bg-transparent border-b-2 border-vintage-brown/30 focus:border-vintage-gold outline-none py-2 text-vintage-brown placeholder:text-vintage-brown/30 transition-colors resize-none"
-                        placeholder="Tuliskan doa terbaik untuk kami..."
-                        style={{ backgroundImage: "linear-gradient(transparent, transparent 31px, rgba(146, 100, 81, 0.1) 31px)", backgroundSize: "100% 32px", lineHeight: "32px" }}
-                        disabled={isSending}
-                    />
+                    <label className="text-xs uppercase tracking-[0.2em] text-vintage-brown font-bold">Pesan & Doa</label>
+                    <div className="relative w-full">
+                        <textarea 
+                            rows={5}
+                            required
+                            value={form.message}
+                            onChange={(e) => setForm({...form, message: e.target.value})}
+                            className="w-full bg-transparent outline-none text-vintage-brown placeholder:text-vintage-brown/30 transition-colors resize-none font-serif text-lg leading-[2.5rem]"
+                            placeholder="Tuliskan doa terbaik..."
+                            style={{ 
+                                // Membuat garis-garis buku tulis dengan gradient
+                                backgroundImage: "linear-gradient(transparent 96%, rgba(92, 64, 51, 0.2) 97%, transparent 100%)", 
+                                backgroundSize: "100% 2.5rem",
+                                backgroundAttachment: "local"
+                            }}
+                            disabled={isSending}
+                        />
+                    </div>
                 </div>
 
                 <button 
                     disabled={isSending || isSent}
-                    className="w-full py-4 border border-vintage-brown text-vintage-brown hover:bg-vintage-brown hover:text-vintage-cream transition-all duration-500 font-serif tracking-[0.2em] text-xs uppercase flex items-center justify-center gap-3 group disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="w-full py-4 bg-vintage-brown text-vintage-cream hover:bg-vintage-brown/90 transition-all duration-500 font-serif tracking-[0.2em] text-xs uppercase flex items-center justify-center gap-3 shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed mt-4"
                 >
                     {isSent ? (
                         <>Terkirim <Check size={16} /></>
                     ) : isSending ? (
                         <span className="animate-pulse">Mengirim...</span>
                     ) : (
-                        <>Kirim Pesan <Send size={16} className="group-hover:translate-x-1 transition-transform" /></>
+                        <>Kirim Pesan <Send size={16} /></>
                     )}
                 </button>
             </form>
         </motion.div>
 
-        {/* --- KOLOM KANAN: DINDING UCAPAN (Data Real-time) --- */}
-        <div className="space-y-6">
-            <h3 className="font-script text-4xl text-vintage-brown text-center md:text-left">Doa Kerabat ({guests.length})</h3>
+        {/* --- KOLOM KANAN: DINDING UCAPAN (Sticky Notes Style) --- */}
+        <div className="space-y-8 h-full flex flex-col">
+            <div className="flex items-center justify-between border-b border-vintage-brown/20 pb-4">
+                <h3 className="font-script text-4xl text-vintage-brown">Doa Kerabat</h3>
+                <span className="px-3 py-1 bg-vintage-brown/10 rounded-full text-xs font-bold text-vintage-brown">{guests.length} Pesan</span>
+            </div>
             
-            <div className="h-[600px] overflow-y-auto pr-4 space-y-6 custom-scrollbar pb-10">
-                {/* State Kosong */}
+            <div className="flex-1 max-h-[600px] overflow-y-auto pr-2 space-y-6 custom-scrollbar pb-10">
                 {guests.length === 0 ? (
-                    <div className="text-center py-10 text-vintage-olive opacity-60 italic bg-[#f9f7f2] p-6 border border-vintage-brown/10 rounded-sm">
+                    <div className="text-center py-16 text-vintage-olive opacity-60 italic border-2 border-dashed border-vintage-brown/10 rounded-lg">
                         <p>"Belum ada ucapan. Jadilah yang pertama mendoakan kami!"</p>
                     </div>
                 ) : (
-                    /* Mapping Data Tamu */
                     guests.map((guest, i) => (
                         <motion.div 
                             key={guest.id}
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
+                            transition={{ delay: 0.05 * (i % 5) }} // Stagger effect
                             viewport={{ once: true }}
-                            className={`p-6 shadow-md border border-vintage-brown/10 relative ${i % 2 === 0 ? 'bg-[#fcfbf7] rotate-1' : 'bg-[#f4f1ea] -rotate-1'}`}
+                            // Variasi rotasi & warna background untuk efek "Sticky Notes" natural
+                            className={`p-6 shadow-md border border-vintage-brown/5 relative group hover:z-10 transition-transform hover:scale-[1.02] ${
+                                i % 2 === 0 ? 'bg-[#fffdf5] rotate-1' : 'bg-[#f8f6f0] -rotate-1'
+                            }`}
                         >
-                            {/* Paku/Pin di atas */}
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-vintage-gold shadow-sm border border-vintage-brown/30" />
+                            {/* Texture Overlay */}
+                            <div className="absolute inset-0 opacity-20 bg-paper-texture mix-blend-multiply pointer-events-none" />
                             
-                            <p className="font-serif text-vintage-brown italic text-sm leading-relaxed mb-4 break-words">
+                            {/* Hiasan Selotip di Atas */}
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-vintage-gold/20 backdrop-blur-sm rotate-1 shadow-sm" />
+                            
+                            <p className="font-serif text-vintage-brown italic text-sm leading-relaxed mb-4 break-words relative z-10">
                                 "{guest.message}"
                             </p>
-                            <div className="flex justify-between items-end border-t border-vintage-brown/10 pt-2">
+                            
+                            <div className="flex justify-between items-end border-t border-vintage-brown/10 pt-3 relative z-10">
                                 <div className="flex flex-col">
-                                    <span className="font-bold text-xs uppercase tracking-widest text-vintage-brown">{guest.name}</span>
-                                    <span className={`text-[10px] font-bold ${guest.attendance === 'Hadir' ? 'text-green-700' : 'text-red-700'}`}>
-                                        {guest.attendance}
+                                    <span className="font-bold text-xs uppercase tracking-widest text-vintage-brown flex items-center gap-1">
+                                        {guest.name}
+                                        {guest.attendance === 'Hadir' && <div className="w-1.5 h-1.5 bg-green-600 rounded-full ml-1" title="Hadir" />}
+                                    </span>
+                                    <span className="text-[10px] text-vintage-olive opacity-70 mt-0.5">
+                                        {formatTime(guest.createdAt)}
                                     </span>
                                 </div>
-                                <span className="text-[10px] text-vintage-olive italic">
-                                    {formatTime(guest.createdAt)}
-                                </span>
                             </div>
                         </motion.div>
                     ))

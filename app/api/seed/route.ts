@@ -18,13 +18,15 @@ export async function GET() {
         groomNickname: 'Romeo',
         groomParents: 'Putra dari Bpk. Montague & Ibu Montague',
         groomInstagram: 'https://instagram.com/romeo',
-        groomPhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop', // Placeholder Unsplash
+        // Kita update juga path foto profil ke file lokal agar konsisten dengan komponen
+        groomPhoto: '/images/vintage/groom.png',
         
         brideName: 'Juliet Capulet',
         brideNickname: 'Juliet',
         brideParents: 'Putri dari Bpk. Capulet & Ibu Capulet',
         brideInstagram: 'https://instagram.com/juliet',
-        bridePhoto: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=800&auto=format&fit=crop', // Placeholder Unsplash
+        // Kita update juga path foto profil ke file lokal agar konsisten dengan komponen
+        bridePhoto: '/images/vintage/bride.png',
       },
       event: {
         date: Timestamp.fromDate(new Date('2025-12-31T09:00:00')), // Tanggal acara
@@ -38,11 +40,12 @@ export async function GET() {
         resepsiAddress: 'Jl. Verona Pusat No. 5, Italia',
         resepsiMapsUrl: 'https://maps.google.com',
       },
+      // UPDATE: Menggunakan aset gambar lokal sesuai instruksi
       gallery: [
-        'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1511285560982-1356c11d4606?q=80&w=800&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1529636798458-92182e662485?q=80&w=800&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?q=80&w=800&auto=format&fit=crop',
+        '/images/vintage/gallery-1.png',
+        '/images/vintage/gallery-2.png',
+        '/images/vintage/gallery-3.png',
+        '/images/vintage/gallery-4.png',
       ],
       gift: {
         bank1Name: 'BCA',
@@ -61,7 +64,7 @@ export async function GET() {
 
     return NextResponse.json({ 
       success: true, 
-      message: `Data undangan untuk ${slug} berhasil dibuat!`,
+      message: `Data undangan untuk ${slug} berhasil diperbarui dengan gambar lokal!`,
       data: dummyData 
     });
 

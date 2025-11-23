@@ -3,9 +3,8 @@
 import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { MapPin, Clock } from 'lucide-react';
+import { MapPin, Clock, Calendar } from 'lucide-react';
 import VintageCountdown from './VintageCountdown';
-// Import tipe data
 import { InvitationData } from '@/lib/invitation';
 
 interface TheEventProps {
@@ -14,7 +13,6 @@ interface TheEventProps {
 
 export default function TheEvent({ event }: TheEventProps) {
   // Convert Timestamp Firestore ke Date Object
-  // Karena di props 'event.date' adalah object { seconds, nanoseconds }
   const eventDate = new Date(event.date.seconds * 1000);
 
   return (
@@ -24,15 +22,16 @@ export default function TheEvent({ event }: TheEventProps) {
       <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-vintage-brown/5 to-transparent pointer-events-none" />
 
       {/* --- JUDUL SECTION --- */}
-      <div className="text-center space-y-6">
+      <div className="text-center space-y-6 relative z-10">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="flex flex-col items-center gap-3"
         >
+          {/* Menggunakan wax-seal.png untuk icon judul */}
           <Image src="/images/vintage/wax-seal.png" alt="seal" width={40} height={40} className="opacity-80" />
-          <h2 className="font-serif text-3xl md:text-5xl text-vintage-brown uppercase tracking-widest border-b-2 border-vintage-gold/50 pb-4 px-8">
+          <h2 className="font-serif text-4xl md:text-6xl text-vintage-brown uppercase tracking-widest border-b-2 border-vintage-gold/50 pb-4 px-8">
             Save The Date
           </h2>
         </motion.div>
@@ -43,11 +42,10 @@ export default function TheEvent({ event }: TheEventProps) {
       </div>
 
       {/* --- COUNTDOWN DINAMIS --- */}
-      {/* Mengirimkan tanggal event ke komponen countdown */}
       <VintageCountdown targetDate={eventDate} />
 
       {/* --- CARDS CONTAINER --- */}
-      <div className="grid md:grid-cols-2 gap-12 pt-8">
+      <div className="grid md:grid-cols-2 gap-12 pt-8 relative z-10">
         
         {/* KARTU 1: AKAD NIKAH */}
         <VintageCard 
@@ -55,7 +53,6 @@ export default function TheEvent({ event }: TheEventProps) {
           time={event.akadTime}
           location={event.akadLocation}
           address={event.akadAddress}
-          imgPattern="opacity-10"
           delay={0.2}
           mapsUrl={event.akadMapsUrl}
         />
@@ -66,23 +63,17 @@ export default function TheEvent({ event }: TheEventProps) {
           time={event.resepsiTime}
           location={event.resepsiLocation}
           address={event.resepsiAddress}
-          imgPattern="opacity-10"
           delay={0.4}
           mapsUrl={event.resepsiMapsUrl}
         />
 
       </div>
 
-      {/* Peta Button Global (Optional, jika ingin ada satu tombol maps utama) */}
-      {/* Kita hilangkan karena sudah ada tombol maps spesifik di tiap kartu */}
-      {/* <motion.div ... > ... </motion.div> 
-      */}
-
     </section>
   );
 }
 
-// --- KOMPONEN KARTU VINTAGE ---
+// --- KOMPONEN KARTU VINTAGE (Ticket Style) ---
 function VintageCard({ title, time, location, address, delay, mapsUrl }: any) {
   return (
     <motion.div 
@@ -90,51 +81,61 @@ function VintageCard({ title, time, location, address, delay, mapsUrl }: any) {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 1.2, delay }}
       viewport={{ once: true }}
-      className="relative p-2 bg-[#f4f1ea] shadow-lg transform hover:-translate-y-2 transition-transform duration-500"
+      className="group relative"
     >
-      {/* Efek Double Border (Bingkai Ganda) */}
-      <div className="h-full w-full border border-vintage-brown/20 p-1">
-        <div className="h-full w-full border border-vintage-brown/60 p-8 md:p-12 flex flex-col items-center text-center relative overflow-hidden">
-            
-            {/* Ornamen Bunga Sudut (Transparan) */}
-            <div className="absolute top-0 left-0 w-20 h-20 opacity-10 pointer-events-none">
-                <Image src="/images/vintage/flower-corner.png" alt="decor" fill className="object-contain" />
+      {/* Card Container dengan Shadow Realistis */}
+      <div className="relative bg-[#f9f7f2] p-1 shadow-xl transform transition-transform duration-500 hover:-translate-y-2 hover:shadow-2xl">
+        
+        {/* Border Dekoratif */}
+        <div className="h-full w-full border border-vintage-brown/20 p-1">
+            <div className="h-full w-full border border-vintage-brown/60 p-8 md:p-10 flex flex-col items-center text-center relative overflow-hidden bg-white/50">
+                
+                {/* Texture Overlay pada Kartu */}
+                <div className="absolute inset-0 opacity-40 bg-paper-texture mix-blend-multiply pointer-events-none" />
+
+                {/* Ornamen Bunga Sudut */}
+                <div className="absolute top-0 left-0 w-20 h-20 opacity-20 pointer-events-none">
+                    <Image src="/images/vintage/flower-corner.png" alt="decor" fill className="object-contain" />
+                </div>
+                <div className="absolute bottom-0 right-0 w-20 h-20 opacity-20 pointer-events-none">
+                    <Image src="/images/vintage/flower-corner.png" alt="decor" fill className="object-contain rotate-180" />
+                </div>
+
+                {/* Judul Acara */}
+                <h3 className="font-script text-5xl md:text-6xl text-vintage-brown mb-6 drop-shadow-sm relative z-10">
+                    {title}
+                </h3>
+
+                {/* Waktu & Icon */}
+                <div className="flex items-center gap-3 mb-6 text-vintage-brown/80 relative z-10 bg-vintage-gold/10 px-4 py-1 rounded-full">
+                    <Clock size={16} className="text-vintage-gold" />
+                    <p className="font-serif text-lg tracking-widest font-bold">{time}</p>
+                </div>
+
+                <div className="w-16 h-[1px] bg-vintage-brown/30 mb-6" />
+
+                {/* Lokasi */}
+                <div className="space-y-2 relative z-10">
+                    <p className="font-serif text-xl text-vintage-brown font-bold uppercase tracking-wide">
+                        {location}
+                    </p>
+                    <p className="font-sans text-sm text-vintage-olive leading-relaxed px-4 max-w-xs mx-auto">
+                        {address}
+                    </p>
+                </div>
+
+                {/* Tombol Maps Dinamis */}
+                <a 
+                    href={mapsUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="mt-8 px-6 py-2 border border-vintage-brown/40 text-[10px] tracking-[0.2em] uppercase hover:bg-vintage-brown hover:text-vintage-cream transition-colors duration-300 inline-flex items-center gap-2 relative z-10 group/btn"
+                >
+                    <MapPin size={14} className="group-hover/btn:scale-110 transition-transform" /> 
+                    Lihat Lokasi
+                </a>
+
             </div>
-            <div className="absolute bottom-0 right-0 w-20 h-20 opacity-10 pointer-events-none">
-                <Image src="/images/vintage/flower-corner.png" alt="decor" fill className="object-contain rotate-180" />
-            </div>
-
-            <h3 className="font-script text-4xl md:text-5xl text-vintage-brown mb-6">
-                {title}
-            </h3>
-
-            {/* Waktu yang menonjol */}
-            <div className="flex items-center gap-3 mb-6 text-vintage-gold">
-                <Clock size={18} />
-                <p className="font-serif text-xl tracking-widest">{time}</p>
-            </div>
-
-            <div className="w-12 h-[1px] bg-vintage-brown/30 mb-6" />
-
-            <div className="space-y-2">
-                <p className="font-serif text-lg text-vintage-brown font-bold uppercase tracking-wide">
-                    {location}
-                </p>
-                <p className="font-sans text-sm text-vintage-olive leading-relaxed px-4">
-                    {address}
-                </p>
-            </div>
-
-            {/* Tombol Maps Dinamis */}
-            <a 
-                href={mapsUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="mt-8 px-6 py-2 border border-vintage-brown/40 text-[10px] tracking-[0.2em] uppercase hover:bg-vintage-brown hover:text-vintage-cream transition-colors duration-300 inline-flex items-center gap-2"
-            >
-                <MapPin size={14} /> Lihat Lokasi
-            </a>
-
         </div>
       </div>
     </motion.div>

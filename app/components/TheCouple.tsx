@@ -4,7 +4,6 @@ import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Instagram } from 'lucide-react';
-// Import tipe data
 import { InvitationData } from '@/lib/invitation';
 
 interface TheCoupleProps {
@@ -13,54 +12,62 @@ interface TheCoupleProps {
 
 export default function TheCouple({ couple }: TheCoupleProps) {
   return (
-    <section className="py-20 md:py-32 px-6 w-full max-w-7xl mx-auto space-y-20 md:space-y-32 overflow-hidden">
+    <section className="py-24 md:py-32 px-6 w-full max-w-7xl mx-auto space-y-24 md:space-y-32 overflow-hidden relative">
       
-      {/* Judul Section */}
+      {/* Background Texture Spot */}
+      <div className="absolute top-1/4 left-0 w-64 h-64 bg-vintage-gold/10 rounded-full blur-3xl pointer-events-none mix-blend-multiply" />
+      <div className="absolute bottom-1/4 right-0 w-64 h-64 bg-vintage-olive/10 rounded-full blur-3xl pointer-events-none mix-blend-multiply" />
+
+      {/* --- JUDUL SECTION --- */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
         viewport={{ once: true }}
-        className="text-center space-y-6"
+        className="text-center space-y-6 relative z-10"
       >
-        <h2 className="font-serif text-3xl md:text-6xl text-vintage-brown uppercase tracking-[0.2em]">
+        <div className="flex justify-center items-center gap-4 opacity-60">
+            <div className="h-[1px] w-12 bg-vintage-brown" />
+            {/* ICON TENGAH = WAX SEAL */}
+            <Image src="/images/vintage/wax-seal.png" alt="icon" width={24} height={24} />
+            <div className="h-[1px] w-12 bg-vintage-brown" />
+        </div>
+        <h2 className="font-serif text-4xl md:text-6xl text-vintage-brown uppercase tracking-[0.2em]">
           Mempelai
         </h2>
-        <div className="flex justify-center">
-             <div className="w-24 h-[2px] bg-vintage-gold" />
-        </div>
+        <p className="font-sans text-vintage-olive italic text-sm md:text-base max-w-xl mx-auto leading-relaxed">
+          "Maha suci Allah yang telah menciptakan makhluk-Nya berpasang-pasangan. Ya Allah, perkenankanlah kami merangkaikan kasih sayang yang Kau ciptakan di antara kami."
+        </p>
       </motion.div>
 
-      {/* --- THE GROOM (PRIA) --- */}
-      <div className="flex flex-col md:flex-row items-center justify-center gap-10 md:gap-20">
+      {/* --- THE GROOM (PRIA - ROMEO) --- */}
+      <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-20 relative z-10">
         
         {/* Foto Pria (Kiri) */}
         <motion.div 
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1.2 }}
+          initial={{ opacity: 0, x: -50, rotate: -5 }}
+          whileInView={{ opacity: 1, x: 0, rotate: -2 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
           viewport={{ once: true }}
           className="relative w-full md:w-5/12 flex justify-center md:justify-end"
         >
-          <div className="relative w-64 md:w-[340px] aspect-[3/4]">
-            {/* Frame */}
-            <div className="absolute inset-[-20px] z-20 pointer-events-none">
-                <Image 
-                    src="/images/vintage/floral-frame.png" 
-                    alt="Vintage Frame" 
-                    fill 
-                    className="object-contain scale-110 drop-shadow-xl" 
-                />
-            </div>
+          <div className="relative p-3 pb-8 md:p-4 md:pb-12 bg-white shadow-xl border border-vintage-brown/10 transform transition-transform duration-500 hover:rotate-0 hover:scale-[1.02]">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 bg-gradient-to-br from-vintage-gold to-yellow-700 rounded-full shadow-md z-20 border border-white/30" />
             
-            {/* Foto Groom Dinamis */}
-            <div className="absolute inset-5 z-10 overflow-hidden rounded-[3rem] bg-vintage-brown/10 shadow-inner">
+            <div className="relative w-[260px] md:w-[300px] aspect-[3/4] overflow-hidden bg-vintage-brown/5">
+               {/* FOTO PRIA = GROOM.PNG */}
                <Image 
-                 src={couple.groomPhoto} 
+                 src="/images/vintage/groom.png"
                  alt={couple.groomName}
                  fill
-                 className="object-cover sepia-[0.2] hover:sepia-0 transition-all duration-1000 hover:scale-105"
-                 sizes="(max-width: 768px) 100vw, 340px"
+                 className="object-cover transition-transform duration-1000 hover:scale-110"
+                 sizes="(max-width: 768px) 100vw, 300px"
                />
+               <div className="absolute inset-0 border border-vintage-brown/10 pointer-events-none" />
+            </div>
+
+            <div className="absolute -bottom-8 -left-8 w-24 h-24 md:w-32 md:h-32 opacity-90 pointer-events-none">
+                <Image src="/images/vintage/flower-corner.png" alt="decor" fill className="object-contain rotate-[-45deg]" />
             </div>
           </div>
         </motion.div>
@@ -71,76 +78,67 @@ export default function TheCouple({ couple }: TheCoupleProps) {
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.2, delay: 0.3 }}
           viewport={{ once: true }}
-          className="w-full md:w-5/12 text-center md:text-left space-y-4 md:space-y-6"
+          className="w-full md:w-5/12 text-center md:text-left space-y-4 pl-0 md:pl-8"
         >
-          <div>
-            <h3 className="font-script text-5xl md:text-8xl text-vintage-brown leading-tight">
-                {couple.groomNickname}
-            </h3>
-            <p className="font-serif text-xs md:text-sm tracking-[0.2em] text-vintage-olive uppercase mt-2">
+          <h3 className="font-script text-6xl md:text-8xl text-vintage-brown drop-shadow-sm leading-none">
+              {couple.groomNickname}
+          </h3>
+          
+          <div className="space-y-2 pt-2">
+            <p className="font-serif text-sm md:text-lg font-bold text-vintage-brown uppercase tracking-[0.2em]">
                {couple.groomName}
             </p>
-            <div className="w-12 h-[1px] bg-vintage-gold my-4 mx-auto md:mx-0" />
-            <p className="font-serif text-xs md:text-sm text-vintage-brown/80">
+            <p className="font-sans text-sm text-vintage-olive">
                 {couple.groomParents}
             </p>
           </div>
 
-          <p className="font-sans text-vintage-brown/80 leading-relaxed text-sm md:text-base max-w-md mx-auto md:mx-0 italic">
-            "Seorang pria yang mencintai kesederhanaan dan kehangatan keluarga. Berjanji untuk menjadi imam yang baik."
-          </p>
+          <div className="flex justify-center md:justify-start py-4">
+             <div className="w-20 h-[1px] bg-vintage-gold/50" />
+          </div>
           
-          <div className="pt-2 flex justify-center md:justify-start">
-            <a href={couple.groomInstagram} target="_blank" rel="noopener noreferrer" className="text-vintage-gold hover:text-vintage-brown transition-colors flex items-center gap-2 text-[10px] md:text-xs tracking-widest uppercase border-b border-transparent hover:border-vintage-brown pb-1">
-                <Instagram size={14} /> Instagram
+          <div className="flex justify-center md:justify-start">
+            <a 
+                href={couple.groomInstagram} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group flex items-center gap-2 px-5 py-2 border border-vintage-brown/30 rounded-full text-[10px] md:text-xs uppercase tracking-widest hover:bg-vintage-brown hover:text-vintage-cream transition-all duration-300"
+            >
+                <Instagram size={14} className="group-hover:scale-110 transition-transform" /> 
+                <span>Instagram</span>
             </a>
           </div>
         </motion.div>
       </div>
 
-      {/* --- DIVIDER BUNGA TENGAH --- */}
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.8 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        className="flex justify-center py-4 opacity-60"
-      >
-        <div className="w-16 h-16 md:w-24 md:h-24 relative">
-             <Image src="/images/vintage/flower-corner.png" alt="divider" fill className="object-contain rotate-45" />
-        </div>
-      </motion.div>
-
-      {/* --- THE BRIDE (WANITA) --- */}
-      <div className="flex flex-col md:flex-row-reverse items-center justify-center gap-10 md:gap-20">
+      {/* --- THE BRIDE (WANITA - JULIET) --- */}
+      <div className="flex flex-col md:flex-row-reverse items-center justify-center gap-12 md:gap-20 relative z-10">
         
         {/* Foto Wanita (Kanan) */}
         <motion.div 
-          initial={{ opacity: 0, x: 50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1.2 }}
+          initial={{ opacity: 0, x: 50, rotate: 5 }}
+          whileInView={{ opacity: 1, x: 0, rotate: 2 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
           viewport={{ once: true }}
           className="relative w-full md:w-5/12 flex justify-center md:justify-start"
         >
-          <div className="relative w-64 md:w-[340px] aspect-[3/4]">
-            {/* Frame */}
-            <div className="absolute inset-[-20px] z-20 pointer-events-none">
-                <Image 
-                    src="/images/vintage/floral-frame.png" 
-                    alt="Vintage Frame" 
-                    fill 
-                    className="object-contain scale-110 drop-shadow-xl"
-                />
-            </div>
+          <div className="relative p-3 pb-8 md:p-4 md:pb-12 bg-white shadow-xl border border-vintage-brown/10 transform transition-transform duration-500 hover:rotate-0 hover:scale-[1.02]">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 bg-gradient-to-br from-vintage-gold to-yellow-700 rounded-full shadow-md z-20 border border-white/30" />
             
-            {/* Foto Bride Dinamis */}
-            <div className="absolute inset-5 z-10 overflow-hidden rounded-[3rem] bg-vintage-brown/10 shadow-inner">
+            <div className="relative w-[260px] md:w-[300px] aspect-[3/4] overflow-hidden bg-vintage-brown/5">
+               {/* FOTO WANITA = BRIDE.PNG */}
                <Image 
-                 src={couple.bridePhoto} 
+                 src="/images/vintage/bride.png"
                  alt={couple.brideName}
                  fill
-                 className="object-cover sepia-[0.2] hover:sepia-0 transition-all duration-1000 hover:scale-105"
-                 sizes="(max-width: 768px) 100vw, 340px"
+                 className="object-cover transition-transform duration-1000 hover:scale-110"
+                 sizes="(max-width: 768px) 100vw, 300px"
                />
+               <div className="absolute inset-0 border border-vintage-brown/10 pointer-events-none" />
+            </div>
+
+            <div className="absolute -bottom-8 -right-8 w-24 h-24 md:w-32 md:h-32 opacity-90 pointer-events-none">
+                <Image src="/images/vintage/flower-corner.png" alt="decor" fill className="object-contain rotate-[135deg]" />
             </div>
           </div>
         </motion.div>
@@ -151,28 +149,34 @@ export default function TheCouple({ couple }: TheCoupleProps) {
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.2, delay: 0.3 }}
           viewport={{ once: true }}
-          className="w-full md:w-5/12 text-center md:text-right space-y-4 md:space-y-6"
+          className="w-full md:w-5/12 text-center md:text-right space-y-4 pr-0 md:pr-8"
         >
-          <div>
-            <h3 className="font-script text-5xl md:text-8xl text-vintage-brown leading-tight">
-                {couple.brideNickname}
-            </h3>
-            <p className="font-serif text-xs md:text-sm tracking-[0.2em] text-vintage-olive uppercase mt-2">
+          <h3 className="font-script text-6xl md:text-8xl text-vintage-brown drop-shadow-sm leading-none">
+              {couple.brideNickname}
+          </h3>
+          
+          <div className="space-y-2 pt-2">
+            <p className="font-serif text-sm md:text-lg font-bold text-vintage-brown uppercase tracking-[0.2em]">
                 {couple.brideName}
             </p>
-            <div className="w-12 h-[1px] bg-vintage-gold my-4 mx-auto md:ml-auto" />
-            <p className="font-serif text-xs md:text-sm text-vintage-brown/80">
+            <p className="font-sans text-sm text-vintage-olive">
                 {couple.brideParents}
             </p>
           </div>
 
-          <p className="font-sans text-vintage-brown/80 leading-relaxed text-sm md:text-base max-w-md mx-auto md:ml-auto italic">
-            "Wanita penyabar yang selalu percaya bahwa cinta sejati itu tumbuh dari ketulusan hati."
-          </p>
+          <div className="flex justify-center md:justify-end py-4">
+             <div className="w-20 h-[1px] bg-vintage-gold/50" />
+          </div>
           
-          <div className="pt-2 flex justify-center md:justify-end">
-            <a href={couple.brideInstagram} target="_blank" rel="noopener noreferrer" className="text-vintage-gold hover:text-vintage-brown transition-colors flex items-center gap-2 text-[10px] md:text-xs tracking-widest uppercase border-b border-transparent hover:border-vintage-brown pb-1">
-                Instagram <Instagram size={14} />
+          <div className="flex justify-center md:justify-end">
+            <a 
+                href={couple.brideInstagram} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group flex items-center gap-2 px-5 py-2 border border-vintage-brown/30 rounded-full text-[10px] md:text-xs uppercase tracking-widest hover:bg-vintage-brown hover:text-vintage-cream transition-all duration-300"
+            >
+                <span>Instagram</span>
+                <Instagram size={14} className="group-hover:scale-110 transition-transform" /> 
             </a>
           </div>
         </motion.div>
