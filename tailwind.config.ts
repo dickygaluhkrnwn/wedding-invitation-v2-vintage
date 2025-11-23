@@ -11,7 +11,7 @@ const config: Config = {
       colors: {
         vintage: {
           brown: "rgb(92, 64, 51)",      // #5C4033
-          cream: "rgb(253, 251, 247)",   // #FDFBF7 (Base Light)
+          cream: "rgb(253, 251, 247)",   // #FDFBF7
           gold: "#C5A059",
           olive: "#73785C",
         },
@@ -22,6 +22,8 @@ const config: Config = {
         sans: ["var(--font-lato)", "sans-serif"],
       },
       backgroundImage: {
+        // PASTIKAN path ini benar. Di Next.js, folder 'public' adalah root '/'.
+        // Jadi '/images/vintage/paper-texture.png' akan mencari file di public/images/vintage/paper-texture.png
         'paper-texture': "url('/images/vintage/paper-texture.png')",
       },
       animation: {

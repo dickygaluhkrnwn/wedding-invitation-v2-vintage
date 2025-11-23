@@ -94,12 +94,13 @@ export default function TheRSVP() {
     <section className="w-full max-w-6xl mx-auto space-y-16 relative py-12">
       
       <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
+         {/* Texture Background Section SANGAT TIPIS (5%) agar tidak flat total */}
          <Image src="/images/vintage/paper-texture.png" alt="texture" fill className="object-cover" />
       </div>
 
       <div className="text-center space-y-6 relative z-10 px-4">
         <div className="flex flex-col items-center gap-3">
-          {/* HAPUS WAX SEAL */}
+          {/* No Wax Seal */}
           <div className="w-1.5 h-1.5 bg-vintage-gold rounded-full mb-2"></div>
           <h2 className="font-serif text-3xl md:text-5xl text-vintage-brown uppercase tracking-widest border-b-2 border-vintage-gold/50 pb-4 px-8 inline-block">
             Buku Tamu
@@ -118,7 +119,8 @@ export default function TheRSVP() {
             viewport={{ once: true }}
             className="relative p-8 md:p-12 bg-[#FDFBF7] shadow-[0_10px_40px_-10px_rgba(92,64,51,0.15)] border border-vintage-brown/10 transform rotate-1"
         >
-            <div className="absolute inset-0 opacity-40 bg-paper-texture mix-blend-multiply pointer-events-none" />
+            {/* TEXTURE: Formulir */}
+            <div className="absolute inset-0 opacity-50 bg-paper-texture mix-blend-multiply pointer-events-none" />
             
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 bg-gradient-to-br from-vintage-gold to-yellow-700 rounded-full shadow-md z-20 border border-white/30" />
 
@@ -214,7 +216,8 @@ export default function TheRSVP() {
                                 i % 2 === 0 ? 'bg-[#fffdf5] rotate-1' : 'bg-[#F9F7F2] -rotate-1'
                             }`}
                         >
-                            <div className="absolute inset-0 opacity-30 bg-paper-texture mix-blend-multiply pointer-events-none" />
+                            {/* TEXTURE: Sticky Note */}
+                            <div className="absolute inset-0 opacity-40 bg-paper-texture mix-blend-multiply pointer-events-none" />
                             
                             <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-vintage-gold/20 backdrop-blur-sm rotate-1 shadow-sm opacity-80" />
                             

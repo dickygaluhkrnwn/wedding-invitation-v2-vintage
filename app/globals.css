@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 :root {
-  /* --- PALET WARNA VINTAGE 09 (Finalized) --- */
-  --foreground-rgb: 92, 64, 51;          /* #5C4033 */
-  --background-start-rgb: 253, 251, 247; /* #FDFBF7 */
-  --background-end-rgb: 244, 241, 234;   /* #F4F1EA */
+  /* Variable Warna */
+  --foreground-rgb: 92, 64, 51;          
+  --background-start-rgb: 253, 251, 247; 
+  --background-end-rgb: 244, 241, 234;   
   
   --color-vintage-gold: #C5A059;
   --color-vintage-olive: #73785C;
@@ -21,19 +21,14 @@ body {
     );
   min-height: 100vh;
   overflow-x: hidden;
+  /* Pastikan tidak ada background-image di sini */
 }
-
-/* REVISI: MENGHAPUS TEKSTUR KERTAS GLOBAL 
-   Agar halaman terlihat bersih dan tidak 'kotor' di awal.
-   Tekstur hanya akan digunakan secara spesifik di komponen kartu.
-*/
 
 @layer utilities {
   .text-shadow-vintage {
     text-shadow: 1px 1px 2px rgba(92, 64, 51, 0.15);
   }
   
-  /* Custom Scrollbar yang rapi */
   .custom-scrollbar::-webkit-scrollbar {
     width: 5px;
   }
