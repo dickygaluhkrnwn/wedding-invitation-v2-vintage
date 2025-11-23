@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Check, PenTool } from 'lucide-react';
+import { Send, Check, PenTool, MessageSquare } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { 
@@ -33,7 +33,6 @@ export default function TheRSVP() {
   const [isSent, setIsSent] = useState(false);
   const [guests, setGuests] = useState<Guest[]>([]);
 
-  // --- REAL-TIME LISTENER ---
   useEffect(() => {
     if (!slug) return;
     const guestsRef = collection(db, 'invitations', slug, 'guests');
@@ -50,7 +49,6 @@ export default function TheRSVP() {
     return () => unsubscribe();
   }, [slug]);
 
-  // --- HANDLE SUBMIT ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!slug || !form.name || !form.message) return;
@@ -93,41 +91,41 @@ export default function TheRSVP() {
   };
 
   return (
-    <section className="py-24 px-6 w-full max-w-6xl mx-auto space-y-16 relative">
+    <section className="w-full max-w-6xl mx-auto space-y-16 relative py-12">
       
-      {/* --- JUDUL SECTION --- */}
-      <div className="text-center space-y-6 relative z-10">
+      <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
+         <Image src="/images/vintage/paper-texture.png" alt="texture" fill className="object-cover" />
+      </div>
+
+      <div className="text-center space-y-6 relative z-10 px-4">
         <div className="flex flex-col items-center gap-3">
-          <Image src="/images/vintage/wax-seal.png" alt="seal" width={40} height={40} className="opacity-80" />
-          <h2 className="font-serif text-3xl md:text-5xl text-vintage-brown uppercase tracking-widest border-b-2 border-vintage-gold/50 pb-4 px-8">
+          {/* HAPUS WAX SEAL */}
+          <div className="w-1.5 h-1.5 bg-vintage-gold rounded-full mb-2"></div>
+          <h2 className="font-serif text-3xl md:text-5xl text-vintage-brown uppercase tracking-widest border-b-2 border-vintage-gold/50 pb-4 px-8 inline-block">
             Buku Tamu
           </h2>
         </div>
-        <p className="font-sans text-vintage-olive max-w-xl mx-auto leading-relaxed italic text-sm">
+        <p className="font-sans text-vintage-olive max-w-xl mx-auto leading-relaxed italic text-sm md:text-base">
           "Kehadiran & doa restu Anda adalah kado terindah bagi kami. Silakan tinggalkan pesan manis di bawah ini."
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start relative z-10">
+      <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start relative z-10 px-4 md:px-8">
         
-        {/* --- KOLOM KIRI: FORMULIR (Paper Style) --- */}
         <motion.div 
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="relative p-8 md:p-10 bg-[#fdfbf7] shadow-2xl border border-vintage-brown/10 transform -rotate-1"
+            className="relative p-8 md:p-12 bg-[#FDFBF7] shadow-[0_10px_40px_-10px_rgba(92,64,51,0.15)] border border-vintage-brown/10 transform rotate-1"
         >
-            {/* Paper Texture Overlay */}
-            <div className="absolute inset-0 opacity-30 bg-paper-texture mix-blend-multiply pointer-events-none" />
+            <div className="absolute inset-0 opacity-40 bg-paper-texture mix-blend-multiply pointer-events-none" />
             
-            {/* Pin Emas */}
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 bg-gradient-to-br from-vintage-gold to-yellow-700 rounded-full shadow-md z-20 border border-white/30" />
 
-            <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
+            <form onSubmit={handleSubmit} className="space-y-10 relative z-10">
                 
-                {/* Input Nama (Garis Bawah Saja) */}
-                <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-vintage-brown font-bold">
+                <div className="space-y-2 group">
+                    <label className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-vintage-brown font-bold opacity-70 group-focus-within:opacity-100 transition-opacity">
                         <PenTool size={12} /> Nama Lengkap
                     </label>
                     <input 
@@ -135,18 +133,17 @@ export default function TheRSVP() {
                         required
                         value={form.name}
                         onChange={(e) => setForm({...form, name: e.target.value})}
-                        className="w-full bg-transparent border-b-2 border-vintage-brown/20 focus:border-vintage-gold outline-none py-3 text-vintage-brown placeholder:text-vintage-brown/30 transition-all font-serif text-lg"
-                        placeholder="Tulis nama Anda..."
+                        className="w-full bg-transparent border-b border-vintage-brown/30 focus:border-vintage-brown outline-none py-2 text-vintage-brown placeholder:text-vintage-brown/20 transition-all font-serif text-xl"
+                        placeholder="Isi nama Anda..."
                         disabled={isSending}
                     />
                 </div>
 
-                {/* Kehadiran (Radio Button Custom) */}
-                <div className="space-y-3">
-                    <label className="text-xs uppercase tracking-[0.2em] text-vintage-brown font-bold">Konfirmasi Kehadiran</label>
+                <div className="space-y-4">
+                    <label className="text-xs uppercase tracking-[0.2em] text-vintage-brown font-bold opacity-70">Konfirmasi Kehadiran</label>
                     <div className="flex flex-wrap gap-4">
                         {['Hadir', 'Maaf, Tidak'].map((opt) => (
-                            <label key={opt} className={`cursor-pointer px-6 py-2 border transition-all duration-300 flex items-center gap-2 relative overflow-hidden group ${form.attendance === opt ? 'border-vintage-gold bg-vintage-gold/10 text-vintage-brown' : 'border-vintage-brown/20 text-vintage-olive hover:border-vintage-gold/50'}`}>
+                            <label key={opt} className={`cursor-pointer px-6 py-3 border transition-all duration-300 flex items-center gap-2 relative overflow-hidden group ${form.attendance === opt ? 'border-vintage-brown bg-vintage-brown/5 text-vintage-brown' : 'border-vintage-brown/20 text-vintage-olive hover:border-vintage-gold/50'}`}>
                                 <input 
                                     type="radio" 
                                     name="attendance" 
@@ -162,23 +159,18 @@ export default function TheRSVP() {
                     </div>
                 </div>
 
-                {/* Pesan (Efek Kertas Bergaris) */}
-                <div className="space-y-2">
-                    <label className="text-xs uppercase tracking-[0.2em] text-vintage-brown font-bold">Pesan & Doa</label>
-                    <div className="relative w-full">
+                <div className="space-y-2 group">
+                    <label className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-vintage-brown font-bold opacity-70 group-focus-within:opacity-100 transition-opacity">
+                        <MessageSquare size={12} /> Pesan & Doa
+                    </label>
+                    <div className="relative w-full bg-vintage-brown/5 p-4 border border-vintage-brown/10">
                         <textarea 
-                            rows={5}
+                            rows={4}
                             required
                             value={form.message}
                             onChange={(e) => setForm({...form, message: e.target.value})}
-                            className="w-full bg-transparent outline-none text-vintage-brown placeholder:text-vintage-brown/30 transition-colors resize-none font-serif text-lg leading-[2.5rem]"
-                            placeholder="Tuliskan doa terbaik..."
-                            style={{ 
-                                // Membuat garis-garis buku tulis dengan gradient
-                                backgroundImage: "linear-gradient(transparent 96%, rgba(92, 64, 51, 0.2) 97%, transparent 100%)", 
-                                backgroundSize: "100% 2.5rem",
-                                backgroundAttachment: "local"
-                            }}
+                            className="w-full bg-transparent outline-none text-vintage-brown placeholder:text-vintage-brown/30 transition-colors resize-none font-serif text-lg leading-relaxed"
+                            placeholder="Tuliskan doa terbaik untuk kami..."
                             disabled={isSending}
                         />
                     </div>
@@ -186,7 +178,7 @@ export default function TheRSVP() {
 
                 <button 
                     disabled={isSending || isSent}
-                    className="w-full py-4 bg-vintage-brown text-vintage-cream hover:bg-vintage-brown/90 transition-all duration-500 font-serif tracking-[0.2em] text-xs uppercase flex items-center justify-center gap-3 shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed mt-4"
+                    className="w-full py-4 bg-vintage-brown text-vintage-cream hover:bg-vintage-brown/90 transition-all duration-500 font-serif tracking-[0.2em] text-xs uppercase flex items-center justify-center gap-3 shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed mt-6 border border-vintage-brown/20"
                 >
                     {isSent ? (
                         <>Terkirim <Check size={16} /></>
@@ -199,16 +191,15 @@ export default function TheRSVP() {
             </form>
         </motion.div>
 
-        {/* --- KOLOM KANAN: DINDING UCAPAN (Sticky Notes Style) --- */}
         <div className="space-y-8 h-full flex flex-col">
             <div className="flex items-center justify-between border-b border-vintage-brown/20 pb-4">
                 <h3 className="font-script text-4xl text-vintage-brown">Doa Kerabat</h3>
-                <span className="px-3 py-1 bg-vintage-brown/10 rounded-full text-xs font-bold text-vintage-brown">{guests.length} Pesan</span>
+                <span className="px-3 py-1 bg-vintage-brown/10 rounded-full text-xs font-bold text-vintage-brown border border-vintage-brown/10">{guests.length} Pesan</span>
             </div>
             
             <div className="flex-1 max-h-[600px] overflow-y-auto pr-2 space-y-6 custom-scrollbar pb-10">
                 {guests.length === 0 ? (
-                    <div className="text-center py-16 text-vintage-olive opacity-60 italic border-2 border-dashed border-vintage-brown/10 rounded-lg">
+                    <div className="text-center py-16 text-vintage-olive opacity-60 italic border-2 border-dashed border-vintage-brown/10 rounded-lg bg-white/30">
                         <p>"Belum ada ucapan. Jadilah yang pertama mendoakan kami!"</p>
                     </div>
                 ) : (
@@ -219,16 +210,13 @@ export default function TheRSVP() {
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.05 * (i % 5) }} // Stagger effect
                             viewport={{ once: true }}
-                            // Variasi rotasi & warna background untuk efek "Sticky Notes" natural
-                            className={`p-6 shadow-md border border-vintage-brown/5 relative group hover:z-10 transition-transform hover:scale-[1.02] ${
-                                i % 2 === 0 ? 'bg-[#fffdf5] rotate-1' : 'bg-[#f8f6f0] -rotate-1'
+                            className={`p-6 shadow-md border border-vintage-brown/10 relative group hover:z-10 transition-transform hover:scale-[1.02] ${
+                                i % 2 === 0 ? 'bg-[#fffdf5] rotate-1' : 'bg-[#F9F7F2] -rotate-1'
                             }`}
                         >
-                            {/* Texture Overlay */}
-                            <div className="absolute inset-0 opacity-20 bg-paper-texture mix-blend-multiply pointer-events-none" />
+                            <div className="absolute inset-0 opacity-30 bg-paper-texture mix-blend-multiply pointer-events-none" />
                             
-                            {/* Hiasan Selotip di Atas */}
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-vintage-gold/20 backdrop-blur-sm rotate-1 shadow-sm" />
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-vintage-gold/20 backdrop-blur-sm rotate-1 shadow-sm opacity-80" />
                             
                             <p className="font-serif text-vintage-brown italic text-sm leading-relaxed mb-4 break-words relative z-10">
                                 "{guest.message}"
@@ -236,11 +224,11 @@ export default function TheRSVP() {
                             
                             <div className="flex justify-between items-end border-t border-vintage-brown/10 pt-3 relative z-10">
                                 <div className="flex flex-col">
-                                    <span className="font-bold text-xs uppercase tracking-widest text-vintage-brown flex items-center gap-1">
+                                    <span className="font-bold text-xs uppercase tracking-widest text-vintage-brown flex items-center gap-2">
                                         {guest.name}
-                                        {guest.attendance === 'Hadir' && <div className="w-1.5 h-1.5 bg-green-600 rounded-full ml-1" title="Hadir" />}
+                                        {guest.attendance === 'Hadir' && <span className="text-[9px] px-1.5 py-0.5 bg-green-100 text-green-800 border border-green-200 rounded-sm">Hadir</span>}
                                     </span>
-                                    <span className="text-[10px] text-vintage-olive opacity-70 mt-0.5">
+                                    <span className="text-[10px] text-vintage-olive opacity-60 mt-1 italic">
                                         {formatTime(guest.createdAt)}
                                     </span>
                                 </div>
