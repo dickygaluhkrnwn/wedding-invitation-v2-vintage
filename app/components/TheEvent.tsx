@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { MapPin, Clock } from 'lucide-react';
+import { MapPin, Clock, Calendar, Ticket } from 'lucide-react';
 import VintageCountdown from './VintageCountdown';
 import { InvitationData } from '@/lib/invitation';
 
@@ -14,28 +14,34 @@ interface TheEventProps {
 export default function TheEvent({ event }: TheEventProps) {
   const eventDate = new Date(event.date.seconds * 1000);
 
+  // Base64 Noise Pattern (Sama seperti TheIntro agar konsisten)
+  const noisePattern = `url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEHb29v///8AAABOmZnDw8O+vr6urq6hoaG7j36HAAAACHRSTlMAM8T/mZkzM4Vj3DIAAAArSURBVDjLY2AYBaNgFIyCUTAKRsEoGAWjYBSMglEwCkbBKBgFo2AUjIIhAQA9bATXt91HzAAAAABJRU5ErkJggg==")`;
+
   return (
-    <section className="w-full max-w-7xl mx-auto space-y-20 relative overflow-hidden">
+    <section className="w-full max-w-7xl mx-auto space-y-16 relative overflow-hidden py-20">
       
-      <div className="absolute -left-20 top-1/3 w-64 h-64 opacity-30 pointer-events-none mix-blend-multiply">
+      {/* Ornamen Sudut Halaman */}
+      <div className="absolute -left-24 top-1/4 w-80 h-80 opacity-20 pointer-events-none mix-blend-multiply">
          <Image src="/images/vintage/flower-corner.png" alt="decor" fill className="object-contain rotate-90" />
       </div>
-      <div className="absolute -right-20 bottom-1/3 w-64 h-64 opacity-30 pointer-events-none mix-blend-multiply">
+      <div className="absolute -right-24 bottom-1/4 w-80 h-80 opacity-20 pointer-events-none mix-blend-multiply">
          <Image src="/images/vintage/flower-corner.png" alt="decor" fill className="object-contain -rotate-90" />
       </div>
 
-      <div className="text-center space-y-8 relative z-10">
+      {/* Judul Section */}
+      <div className="text-center space-y-8 relative z-10 px-4">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="flex flex-col items-center gap-4"
         >
-          <div className="w-1.5 h-1.5 bg-vintage-gold rounded-full mb-2"></div>
+          <div className="w-2 h-2 bg-vintage-gold rounded-full mb-2 animate-pulse"></div>
           
           <h2 className="font-serif text-4xl md:text-6xl text-vintage-brown uppercase tracking-[0.2em] relative inline-block py-4">
             <span className="relative z-10">Save The Date</span>
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-[1px] bg-vintage-gold" />
+            {/* Garis bawah dekoratif */}
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-vintage-gold to-transparent" />
           </h2>
         </motion.div>
 
@@ -44,26 +50,34 @@ export default function TheEvent({ event }: TheEventProps) {
         </p>
       </div>
 
-      <div className="relative z-10">
+      {/* Countdown */}
+      <div className="relative z-10 mb-12">
         <VintageCountdown targetDate={eventDate} />
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8 md:gap-12 pt-8 relative z-10 px-2 md:px-8">
-        <VintageCard 
-          title="Akad Nikah"
+      {/* GRID TIKET VINTAGE */}
+      <div className="grid lg:grid-cols-2 gap-10 px-4 md:px-12 relative z-10">
+        <TicketCard 
+          type="Akad Nikah"
           time={event.akadTime}
           location={event.akadLocation}
           address={event.akadAddress}
-          delay={0.2}
+          date={eventDate}
           mapsUrl={event.akadMapsUrl}
+          delay={0.2}
+          noise={noisePattern}
+          code="AKAD-VIP"
         />
-        <VintageCard 
-          title="Resepsi"
+        <TicketCard 
+          type="Resepsi"
           time={event.resepsiTime}
           location={event.resepsiLocation}
           address={event.resepsiAddress}
-          delay={0.4}
+          date={eventDate}
           mapsUrl={event.resepsiMapsUrl}
+          delay={0.4}
+          noise={noisePattern}
+          code="RCPT-GST"
         />
       </div>
 
@@ -71,71 +85,112 @@ export default function TheEvent({ event }: TheEventProps) {
   );
 }
 
-function VintageCard({ title, time, location, address, delay, mapsUrl }: any) {
+// KOMPONEN KARTU TIKET BARU
+function TicketCard({ type, time, location, address, date, mapsUrl, delay, noise, code }: any) {
+  const formattedDate = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase();
+
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1.2, delay, type: "spring", stiffness: 50 }}
+      initial={{ opacity: 0, x: delay === 0.2 ? -50 : 50 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      transition={{ duration: 1, delay, type: "spring", bounce: 0.3 }}
       viewport={{ once: true }}
-      className="group w-full"
+      className="w-full filter drop-shadow-2xl"
     >
-      <div className="relative w-full bg-[#F9F7F2] shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-500 hover:shadow-[0_20px_40px_rgb(92,64,51,0.15)] hover:-translate-y-1 overflow-hidden rounded-sm">
+      {/* BENTUK TIKET: Menggunakan Flex Row (Desktop) / Col (Mobile) */}
+      <div className="flex flex-col md:flex-row w-full bg-[#F2E8D5] rounded-lg overflow-hidden relative group">
         
-        {/* FIX: Texture Menggunakan Image Component */}
-        <div className="absolute inset-0 z-0 opacity-50 pointer-events-none mix-blend-multiply">
-           <Image src="/images/vintage/paper-texture.png" alt="texture" fill className="object-cover" />
-        </div>
+        {/* --- GLOBAL TEXTURE (Diaplikasikan ke seluruh tiket) --- */}
+        <div 
+            className="absolute inset-0 z-0 pointer-events-none opacity-40 mix-blend-multiply"
+            style={{ backgroundImage: noise, backgroundSize: '100px 100px' }}
+        />
+        
+        {/* Efek Kertas Kotor (Vignette) */}
+        <div className="absolute inset-0 z-0 pointer-events-none shadow-[inset_0_0_40px_rgba(92,64,51,0.1)]" />
 
-        <div className="absolute inset-2 border border-vintage-brown/10 pointer-events-none z-20" />
-        <div className="absolute inset-3 border border-vintage-brown/5 pointer-events-none z-20" />
-
-        <div className="absolute top-0 left-0 w-16 h-16 border-t-[3px] border-l-[3px] border-vintage-gold/30 rounded-tl-lg z-20" />
-        <div className="absolute bottom-0 right-0 w-16 h-16 border-b-[3px] border-r-[3px] border-vintage-gold/30 rounded-br-lg z-20" />
-
-        <div className="relative p-10 md:p-12 flex flex-col items-center text-center h-full justify-between bg-white/40 backdrop-blur-sm">
+        {/* --- BAGIAN KIRI (MAIN INFO) --- */}
+        <div className="flex-1 p-8 md:p-10 relative border-b-2 md:border-b-0 md:border-r-2 border-dashed border-vintage-brown/30 flex flex-col justify-between min-h-[280px]">
             
-            <div className="relative z-10 space-y-6 w-full">
-                <div className="flex items-center justify-center gap-4">
-                    <div className="h-[1px] w-8 bg-vintage-brown/20" />
-                    <h3 className="font-script text-5xl md:text-6xl text-vintage-brown drop-shadow-sm">
-                        {title}
-                    </h3>
-                    <div className="h-[1px] w-8 bg-vintage-brown/20" />
+            {/* Header Tiket */}
+            <div className="flex justify-between items-start mb-6">
+                <div className="border border-vintage-brown/30 px-3 py-1 rounded-sm">
+                    <span className="font-mono text-xs tracking-widest text-vintage-brown uppercase font-bold">ADMIT ONE</span>
                 </div>
+                <Ticket size={20} className="text-vintage-gold opacity-80" />
+            </div>
 
-                <div className="inline-flex items-center gap-3 px-6 py-2 bg-vintage-brown/5 rounded-full border border-vintage-brown/10">
-                    <Clock size={14} className="text-vintage-gold" />
-                    <p className="font-serif text-base md:text-lg tracking-[0.15em] font-bold text-vintage-brown">
-                        {time}
-                    </p>
+            {/* Konten Utama */}
+            <div className="space-y-4 relative z-10">
+                <h3 className="font-script text-5xl md:text-6xl text-vintage-brown leading-none">{type}</h3>
+                
+                <div className="flex flex-col gap-3 pt-2">
+                    <div className="flex items-center gap-3 text-vintage-brown">
+                        <Calendar size={16} className="shrink-0 opacity-70" />
+                        <span className="font-mono text-sm md:text-base font-bold tracking-wider">{formattedDate}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-vintage-brown">
+                        <Clock size={16} className="shrink-0 opacity-70" />
+                        <span className="font-mono text-sm md:text-base font-bold tracking-wider">{time}</span>
+                    </div>
                 </div>
             </div>
 
-            <div className="relative z-10 my-8 space-y-3 w-full">
-                <p className="font-serif text-lg md:text-xl text-vintage-brown font-bold uppercase tracking-wide leading-relaxed border-b border-dashed border-vintage-brown/20 pb-4 mx-4">
-                    {location}
-                </p>
-                <p className="font-sans text-sm text-vintage-olive leading-relaxed px-4 pt-2 max-w-xs mx-auto">
-                    {address}
-                </p>
+            {/* Lokasi (Bawah Kiri) */}
+            <div className="mt-8 pt-6 border-t border-vintage-brown/10">
+                <p className="font-serif text-lg font-bold text-vintage-brown uppercase tracking-wide line-clamp-1">{location}</p>
+                <p className="font-sans text-xs text-vintage-olive mt-1 line-clamp-2">{address}</p>
             </div>
 
-            <div className="relative z-10 mt-auto pt-4">
-                <a 
-                    href={mapsUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="group/btn inline-flex items-center gap-3 px-8 py-3 border border-vintage-brown text-vintage-brown text-[10px] md:text-xs font-bold tracking-[0.25em] uppercase hover:bg-vintage-brown hover:text-vintage-cream transition-all duration-300 rounded-sm relative overflow-hidden"
-                >
-                    <span className="relative z-10 flex items-center gap-2">
-                        <MapPin size={14} className="transition-transform group-hover/btn:-translate-y-0.5" /> 
-                        Lihat Lokasi
-                    </span>
-                </a>
-            </div>
-
+            {/* NOTCH (Lubang Sobekan) */}
+            {/* Mobile: Kiri Bawah & Kanan Bawah dari garis horizontal */}
+            <div className="md:hidden absolute -bottom-3 -left-2 w-6 h-6 bg-vintage-cream rounded-full z-20 shadow-inner" />
+            <div className="md:hidden absolute -bottom-3 -right-2 w-6 h-6 bg-vintage-cream rounded-full z-20 shadow-inner" />
+            
+            {/* Desktop: Atas Kanan & Bawah Kanan dari garis vertikal */}
+            <div className="hidden md:block absolute -top-3 -right-3 w-6 h-6 bg-vintage-cream rounded-full z-20 shadow-inner" />
+            <div className="hidden md:block absolute -bottom-3 -right-3 w-6 h-6 bg-vintage-cream rounded-full z-20 shadow-inner" />
         </div>
+
+        {/* --- BAGIAN KANAN (STUB / TOMBOL) --- */}
+        <div className="w-full md:w-48 bg-[#ebe0c5] p-6 flex flex-col items-center justify-center gap-6 relative">
+            
+            {/* Texture Stub (Sedikit lebih gelap) */}
+            <div className="absolute inset-0 z-0 pointer-events-none opacity-10 bg-black mix-blend-overlay" />
+
+            {/* Rotated Text decoration */}
+            <div className="absolute top-4 right-4 md:left-4 md:right-auto md:top-1/2 md:-translate-y-1/2 md:-rotate-90 origin-center opacity-20 whitespace-nowrap pointer-events-none">
+                <span className="font-mono text-[10px] tracking-[0.5em] uppercase">OFFICIAL INVITATION</span>
+            </div>
+
+            {/* Kode Unik */}
+            <div className="font-mono text-2xl md:text-3xl font-bold text-vintage-brown/20 tracking-widest -rotate-90 md:rotate-0 absolute md:static left-4 top-1/2 -translate-y-1/2 md:translate-y-0 pointer-events-none">
+                {code}
+            </div>
+
+            {/* Barcode Simulation */}
+            <div className="h-8 w-full flex justify-center gap-[2px] opacity-40 mix-blend-multiply">
+                {[...Array(20)].map((_, i) => (
+                    <div key={i} className="bg-vintage-brown h-full" style={{ width: Math.random() > 0.5 ? '2px' : '4px' }}></div>
+                ))}
+            </div>
+
+            {/* Tombol Lokasi */}
+            <a 
+                href={mapsUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="relative z-10 group/btn flex flex-col items-center gap-2 text-vintage-brown hover:text-vintage-gold transition-colors"
+            >
+                <div className="w-12 h-12 rounded-full border-2 border-vintage-brown group-hover/btn:border-vintage-gold flex items-center justify-center transition-all bg-[#F2E8D5] shadow-md group-hover/btn:scale-110">
+                    <MapPin size={20} />
+                </div>
+                <span className="font-sans text-[10px] font-bold tracking-widest uppercase border-b border-transparent group-hover/btn:border-vintage-gold">
+                    Maps
+                </span>
+            </a>
+        </div>
+
       </div>
     </motion.div>
   );

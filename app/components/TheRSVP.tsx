@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Check, PenTool, MessageSquare } from 'lucide-react';
+import { Send, Check, PenTool, MessageSquare, Pin } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { 
@@ -32,6 +32,18 @@ export default function TheRSVP() {
   const [isSending, setIsSending] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const [guests, setGuests] = useState<Guest[]>([]);
+
+  // Base64 Noise Pattern
+  const noisePattern = `url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEHb29v///8AAABOmZnDw8O+vr6urq6hoaG7j36HAAAACHRSTlMAM8T/mZkzM4Vj3DIAAAArSURBVDjLY2AYBaNgFIyCUTAKRsEoGAWjYBSMglEwCkbBKBgFo2AUjIIhAQA9bATXt91HzAAAAABJRU5ErkJggg==")`;
+
+  // Warna-warni kertas sticky notes vintage
+  const stickyColors = [
+    'bg-[#fdfeb8]', // Kuning Pudar
+    'bg-[#ffdfdf]', // Pink Pudar
+    'bg-[#e1f7d5]', // Hijau Pudar
+    'bg-[#d4f0f0]', // Biru Pudar
+    'bg-[#f4f1ea]', // Cream
+  ];
 
   useEffect(() => {
     if (!slug) return;
@@ -85,68 +97,83 @@ export default function TheRSVP() {
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
     if (diffInSeconds < 60) return 'Baru saja';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} menit yang lalu`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} jam yang lalu`;
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} menit lalu`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} jam lalu`;
     return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
   };
 
   return (
-    <section className="w-full max-w-6xl mx-auto space-y-16 relative py-12">
+    <section className="w-full max-w-7xl mx-auto space-y-16 relative py-20 overflow-hidden">
       
-      <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
-         {/* Texture Background Section */}
-         <Image src="/images/vintage/paper-texture.png" alt="texture" fill className="object-cover" />
+      {/* Ornamen Background */}
+      <div className="absolute -left-20 top-20 w-64 h-64 opacity-20 pointer-events-none mix-blend-multiply">
+         <Image src="/images/vintage/flower-corner.png" alt="decor" fill className="object-contain rotate-90" />
       </div>
 
+      {/* Header Section */}
       <div className="text-center space-y-6 relative z-10 px-4">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-1.5 h-1.5 bg-vintage-gold rounded-full mb-2"></div>
-          <h2 className="font-serif text-3xl md:text-5xl text-vintage-brown uppercase tracking-widest border-b-2 border-vintage-gold/50 pb-4 px-8 inline-block">
-            Buku Tamu
+          <div className="w-2 h-2 bg-vintage-gold rounded-full mb-2 animate-pulse"></div>
+          <h2 className="font-serif text-4xl md:text-6xl text-vintage-brown uppercase tracking-widest relative inline-block">
+            <span className="relative z-10 border-b-2 border-vintage-gold/50 pb-2 px-4">Guest Book</span>
           </h2>
         </div>
-        <p className="font-sans text-vintage-olive max-w-xl mx-auto leading-relaxed italic text-sm md:text-base">
-          "Kehadiran & doa restu Anda adalah kado terindah bagi kami. Silakan tinggalkan pesan manis di bawah ini."
+        <p className="font-sans text-vintage-olive/80 max-w-xl mx-auto leading-loose italic text-sm md:text-base">
+          "Kehadiran & doa restu Anda adalah kado terindah bagi kami."
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start relative z-10 px-4 md:px-8">
+      <div className="grid lg:grid-cols-5 gap-12 lg:gap-16 items-start relative z-10 px-4 md:px-8">
         
+        {/* --- FORMULIR (SURAT VINTAGE) - KIRI (2/5) --- */}
         <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, x: -50, rotate: -2 }}
+            whileInView={{ opacity: 1, x: 0, rotate: 0 }}
             viewport={{ once: true }}
-            className="relative p-8 md:p-12 bg-[#FDFBF7] shadow-[0_10px_40px_-10px_rgba(92,64,51,0.15)] border border-vintage-brown/10 transform rotate-1 overflow-hidden"
+            transition={{ duration: 1 }}
+            className="lg:col-span-2 relative p-8 md:p-10 bg-[#F2E8D5] shadow-[0_20px_50px_rgba(92,64,51,0.2)] border-t border-l border-white/50"
         >
-            {/* FIX: Texture Menggunakan Image Component */}
-            <div className="absolute inset-0 z-0 opacity-50 pointer-events-none mix-blend-multiply">
-               <Image src="/images/vintage/paper-texture.png" alt="texture" fill className="object-cover" />
-            </div>
+            {/* Texture Kertas & Garis Buku */}
+            <div className="absolute inset-0 z-0 pointer-events-none opacity-30 mix-blend-multiply" style={{ backgroundImage: noisePattern }} />
+            <div className="absolute inset-0 z-0 pointer-events-none" 
+                 style={{ 
+                    backgroundImage: 'repeating-linear-gradient(transparent, transparent 39px, #a39888 40px)',
+                    backgroundPosition: '0 24px'
+                 }} 
+            />
             
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 bg-gradient-to-br from-vintage-gold to-yellow-700 rounded-full shadow-md z-20 border border-white/30" />
+            {/* Klip Kertas (Hiasan) */}
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-32 h-8 bg-[#e6e0d0] shadow-md rounded-sm border border-vintage-brown/20 flex items-center justify-center z-20 transform -rotate-1">
+               <div className="w-2 h-2 bg-vintage-brown rounded-full mx-auto opacity-50 shadow-inner" />
+            </div>
 
-            <form onSubmit={handleSubmit} className="space-y-10 relative z-10">
-                {/* Form fields... (sama seperti sebelumnya) */}
-                <div className="space-y-2 group">
-                    <label className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-vintage-brown font-bold opacity-70 group-focus-within:opacity-100 transition-opacity">
-                        <PenTool size={12} /> Nama Lengkap
+            <form onSubmit={handleSubmit} className="space-y-8 relative z-10 mt-6">
+                
+                {/* Input Nama (Garis Bawah Saja) */}
+                <div className="space-y-1 pt-2">
+                    <label className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-vintage-brown font-bold opacity-60">
+                        <PenTool size={10} /> Nama Anda
                     </label>
                     <input 
                         type="text" 
                         required
                         value={form.name}
                         onChange={(e) => setForm({...form, name: e.target.value})}
-                        className="w-full bg-transparent border-b border-vintage-brown/30 focus:border-vintage-brown outline-none py-2 text-vintage-brown placeholder:text-vintage-brown/20 transition-all font-serif text-xl"
-                        placeholder="Isi nama Anda..."
+                        className="w-full bg-transparent border-b-2 border-vintage-brown/30 focus:border-vintage-brown outline-none py-1 text-vintage-brown font-serif text-xl placeholder:text-vintage-brown/20 transition-colors"
+                        placeholder="Tulis nama..."
                         disabled={isSending}
                     />
                 </div>
 
-                <div className="space-y-4">
-                    <label className="text-xs uppercase tracking-[0.2em] text-vintage-brown font-bold opacity-70">Konfirmasi Kehadiran</label>
-                    <div className="flex flex-wrap gap-4">
+                {/* Radio Attendance (Checkbox Vintage) */}
+                <div className="space-y-3 pt-4">
+                    <label className="text-[10px] uppercase tracking-[0.2em] text-vintage-brown font-bold opacity-60">Konfirmasi</label>
+                    <div className="flex gap-4">
                         {['Hadir', 'Maaf, Tidak'].map((opt) => (
-                            <label key={opt} className={`cursor-pointer px-6 py-3 border transition-all duration-300 flex items-center gap-2 relative overflow-hidden group ${form.attendance === opt ? 'border-vintage-brown bg-vintage-brown/5 text-vintage-brown' : 'border-vintage-brown/20 text-vintage-olive hover:border-vintage-gold/50'}`}>
+                            <label key={opt} className="cursor-pointer flex items-center gap-2 group">
+                                <div className={`w-5 h-5 border-2 border-vintage-brown/40 rounded-sm flex items-center justify-center transition-colors ${form.attendance === opt ? 'bg-vintage-brown border-vintage-brown' : 'group-hover:border-vintage-brown'}`}>
+                                    {form.attendance === opt && <Check size={12} className="text-[#F2E8D5]" />}
+                                </div>
                                 <input 
                                     type="radio" 
                                     name="attendance" 
@@ -155,92 +182,106 @@ export default function TheRSVP() {
                                     className="hidden" 
                                     disabled={isSending}
                                 />
-                                {form.attendance === opt && <Check size={14} className="text-vintage-brown" />}
-                                <span className="uppercase text-xs tracking-widest font-bold">{opt}</span>
+                                <span className={`text-sm font-serif ${form.attendance === opt ? 'text-vintage-brown font-bold italic' : 'text-vintage-olive'}`}>{opt}</span>
                             </label>
                         ))}
                     </div>
                 </div>
 
-                <div className="space-y-2 group">
-                    <label className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-vintage-brown font-bold opacity-70 group-focus-within:opacity-100 transition-opacity">
-                        <MessageSquare size={12} /> Pesan & Doa
+                {/* Textarea Pesan (Seperti menulis di buku) */}
+                <div className="space-y-1 pt-4">
+                    <label className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-vintage-brown font-bold opacity-60">
+                        <MessageSquare size={10} /> Pesan & Doa
                     </label>
-                    <div className="relative w-full bg-vintage-brown/5 p-4 border border-vintage-brown/10">
-                        <textarea 
-                            rows={4}
-                            required
-                            value={form.message}
-                            onChange={(e) => setForm({...form, message: e.target.value})}
-                            className="w-full bg-transparent outline-none text-vintage-brown placeholder:text-vintage-brown/30 transition-colors resize-none font-serif text-lg leading-relaxed"
-                            placeholder="Tuliskan doa terbaik untuk kami..."
-                            disabled={isSending}
-                        />
-                    </div>
+                    <textarea 
+                        rows={4}
+                        required
+                        value={form.message}
+                        onChange={(e) => setForm({...form, message: e.target.value})}
+                        className="w-full bg-transparent outline-none text-vintage-brown font-serif text-lg leading-[40px] resize-none -mt-2"
+                        style={{ lineHeight: '40px' }} // Sesuaikan dengan garis background
+                        placeholder="Tuliskan doa terbaik..."
+                        disabled={isSending}
+                    />
                 </div>
 
+                {/* FIX BUTTON VISIBILITY: Menggunakan Hex Color Solid */}
                 <button 
                     disabled={isSending || isSent}
-                    className="w-full py-4 bg-vintage-brown text-vintage-cream hover:bg-vintage-brown/90 transition-all duration-500 font-serif tracking-[0.2em] text-xs uppercase flex items-center justify-center gap-3 shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed mt-6 border border-vintage-brown/20"
+                    className="w-full py-3 mt-4 bg-[#5C4033] text-[#F2E8D5] hover:bg-[#4a332a] transition-all font-serif tracking-[0.2em] text-xs uppercase flex items-center justify-center gap-2 shadow-lg active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed border border-transparent hover:border-[#F2E8D5]/50 z-20 relative"
                 >
                     {isSent ? (
-                        <>Terkirim <Check size={16} /></>
+                        <>Terkirim <Check size={14} /></>
                     ) : isSending ? (
                         <span className="animate-pulse">Mengirim...</span>
                     ) : (
-                        <>Kirim Pesan <Send size={16} /></>
+                        <>Kirim Surat <Send size={14} /></>
                     )}
                 </button>
             </form>
         </motion.div>
 
-        <div className="space-y-8 h-full flex flex-col">
-            <div className="flex items-center justify-between border-b border-vintage-brown/20 pb-4">
-                <h3 className="font-script text-4xl text-vintage-brown">Doa Kerabat</h3>
-                <span className="px-3 py-1 bg-vintage-brown/10 rounded-full text-xs font-bold text-vintage-brown border border-vintage-brown/10">{guests.length} Pesan</span>
-            </div>
+        {/* --- DINDING PESAN (STICKY NOTES) - KANAN (3/5) --- */}
+        <div className="lg:col-span-3 relative min-h-[500px] bg-vintage-brown/5 rounded-lg p-6 md:p-8 border-2 border-dashed border-vintage-brown/10">
             
-            <div className="flex-1 max-h-[600px] overflow-y-auto pr-2 space-y-6 custom-scrollbar pb-10">
+            <div className="absolute top-0 right-0 px-4 py-2 bg-vintage-brown text-[#F2E8D5] text-[10px] font-bold uppercase tracking-widest rounded-bl-lg shadow-sm z-20">
+                Total: {guests.length} Pesan
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar pb-10">
                 {guests.length === 0 ? (
-                    <div className="text-center py-16 text-vintage-olive opacity-60 italic border-2 border-dashed border-vintage-brown/10 rounded-lg bg-white/30">
-                        <p>"Belum ada ucapan. Jadilah yang pertama mendoakan kami!"</p>
+                    <div className="col-span-full flex flex-col items-center justify-center py-20 opacity-40">
+                        <MessageSquare size={40} className="text-vintage-brown mb-4" />
+                        <p className="font-serif text-vintage-brown italic">"Belum ada surat yang ditempel..."</p>
                     </div>
                 ) : (
-                    guests.map((guest, i) => (
-                        <motion.div 
-                            key={guest.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.05 * (i % 5) }} // Stagger effect
-                            viewport={{ once: true }}
-                            className={`p-6 shadow-md border border-vintage-brown/10 relative group hover:z-10 transition-transform hover:scale-[1.02] overflow-hidden ${
-                                i % 2 === 0 ? 'bg-[#fffdf5] rotate-1' : 'bg-[#F9F7F2] -rotate-1'
-                            }`}
-                        >
-                            {/* FIX: Texture Menggunakan Image Component */}
-                            <div className="absolute inset-0 z-0 opacity-40 pointer-events-none mix-blend-multiply">
-                               <Image src="/images/vintage/paper-texture.png" alt="texture" fill className="object-cover" />
-                            </div>
-                            
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-vintage-gold/20 backdrop-blur-sm rotate-1 shadow-sm opacity-80" />
-                            
-                            <p className="font-serif text-vintage-brown italic text-sm leading-relaxed mb-4 break-words relative z-10">
-                                "{guest.message}"
-                            </p>
-                            
-                            <div className="flex justify-between items-end border-t border-vintage-brown/10 pt-3 relative z-10">
-                                <div className="flex flex-col">
-                                    <span className="font-bold text-xs uppercase tracking-widest text-vintage-brown flex items-center gap-2">
-                                        {guest.name}
-                                        {guest.attendance === 'Hadir' && <span className="text-[9px] px-1.5 py-0.5 bg-green-100 text-green-800 border border-green-200 rounded-sm">Hadir</span>}
-                                    </span>
-                                    <span className="text-[10px] text-vintage-olive opacity-60 mt-1 italic">
-                                        {formatTime(guest.createdAt)}
-                                    </span>
+                    guests.map((guest, i) => {
+                        const rotation = i % 2 === 0 ? 'rotate-1' : '-rotate-1';
+                        const noteColor = stickyColors[i % stickyColors.length];
+
+                        return (
+                            <motion.div 
+                                key={guest.id}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.05 * (i % 4), type: "spring" }}
+                                viewport={{ once: true }}
+                                className={`relative p-6 shadow-md ${noteColor} ${rotation} group hover:z-10 hover:scale-105 transition-transform duration-300`}
+                            >
+                                <div className="absolute inset-0 z-0 pointer-events-none opacity-20 mix-blend-multiply" style={{ backgroundImage: noisePattern }} />
+                                
+                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 text-vintage-brown drop-shadow-md transform hover:-translate-y-1 transition-transform">
+                                    <Pin size={20} fill="#5C4033" />
                                 </div>
-                            </div>
-                        </motion.div>
-                    ))
+
+                                {i % 3 === 0 && (
+                                    <div className="absolute -top-2 -right-2 w-8 h-4 bg-white/40 rotate-45 backdrop-blur-sm shadow-sm border border-white/20" />
+                                )}
+
+                                <div className="relative z-10">
+                                    <p className="font-serif text-vintage-brown text-sm leading-relaxed mb-4 break-words italic">
+                                        "{guest.message}"
+                                    </p>
+                                    
+                                    <div className="border-t border-vintage-brown/10 pt-2 flex justify-between items-end">
+                                        <div>
+                                            <p className="font-bold text-xs uppercase tracking-wider text-vintage-brown">
+                                                {guest.name}
+                                            </p>
+                                            <p className="text-[9px] text-vintage-olive opacity-60 mt-0.5">
+                                                {formatTime(guest.createdAt)}
+                                            </p>
+                                        </div>
+                                        {guest.attendance === 'Hadir' && (
+                                            <span className="text-[8px] font-bold px-1.5 py-0.5 border border-vintage-brown/30 text-vintage-brown rounded-sm bg-white/20">
+                                                HADIR
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            </motion.div>
+                        );
+                    })
                 )}
             </div>
         </div>

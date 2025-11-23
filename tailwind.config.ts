@@ -21,16 +21,14 @@ const config: Config = {
         script: ["var(--font-pinyon)", "cursive"],
         sans: ["var(--font-lato)", "sans-serif"],
       },
-      backgroundImage: {
-        // PASTIKAN path ini benar. Di Next.js, folder 'public' adalah root '/'.
-        // Jadi '/images/vintage/paper-texture.png' akan mencari file di public/images/vintage/paper-texture.png
-        'paper-texture': "url('/images/vintage/paper-texture.png')",
-      },
+      // backgroundImage dihapus karena kita menggunakan Base64 noise inline di komponen
       animation: {
         'fade-up': 'fadeUp 1s ease-out forwards',
         'fade-in': 'fadeIn 1.5s ease-out forwards',
         'float': 'float 6s ease-in-out infinite',
         'spin-slow': 'spin 12s linear infinite',
+        'shimmer': 'shimmer 2s linear infinite', // Efek kilau emas
+        'wobble': 'wobble 1s ease-in-out infinite', // Efek seal minta diklik
       },
       keyframes: {
         fadeUp: {
@@ -45,6 +43,15 @@ const config: Config = {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10px)' },
         },
+        shimmer: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
+        wobble: {
+          '0%, 100%': { transform: 'rotate(0deg)' },
+          '25%': { transform: 'rotate(-3deg)' },
+          '75%': { transform: 'rotate(3deg)' },
+        }
       },
     },
   },

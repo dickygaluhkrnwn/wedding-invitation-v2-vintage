@@ -16,6 +16,9 @@ export default function VintageCountdown({ targetDate }: VintageCountdownProps) 
     seconds: 0,
   });
 
+  // Base64 Noise Pattern (Konsisten)
+  const noisePattern = `url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEHb29v///8AAABOmZnDw8O+vr6urq6hoaG7j36HAAAACHRSTlMAM8T/mZkzM4Vj3DIAAAArSURBVDjLY2AYBaNgFIyCUTAKRsEoGAWjYBSMglEwCkbBKBgFo2AUjIIhAQA9bATXt91HzAAAAABJRU5ErkJggg==")`;
+
   useEffect(() => {
     const targetTime = targetDate.getTime();
 
@@ -39,20 +42,21 @@ export default function VintageCountdown({ targetDate }: VintageCountdownProps) 
     return () => clearInterval(interval);
   }, [targetDate]);
 
-  // Komponen Angka (Updated Design)
+  // Komponen Angka (Updated Design: Vintage Calendar Block)
   const TimeUnit = ({ value, label }: { value: number; label: string }) => (
     <div className="flex flex-col items-center mx-2 md:mx-4">
-      <div className="relative w-[70px] h-[80px] md:w-[90px] md:h-[100px] bg-white border border-vintage-brown/20 shadow-lg flex items-center justify-center mb-2 group hover:scale-105 transition-transform duration-300">
-        {/* Sudut Dekoratif */}
-        <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-vintage-gold" />
-        <div className="absolute top-1 right-1 w-2 h-2 border-t border-r border-vintage-gold" />
-        <div className="absolute bottom-1 left-1 w-2 h-2 border-b border-l border-vintage-gold" />
-        <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-vintage-gold" />
+      <div className="relative w-[70px] h-[80px] md:w-[90px] md:h-[100px] bg-[#F2E8D5] border-2 border-vintage-brown/20 shadow-[0_4px_10px_rgba(92,64,51,0.15)] flex flex-col items-center justify-center mb-2 group hover:-translate-y-1 transition-transform duration-300 rounded-sm overflow-hidden">
         
-        {/* Texture Overlay Kecil */}
-        <div className="absolute inset-0 opacity-20 bg-paper-texture mix-blend-multiply pointer-events-none" />
+        {/* Texture Kertas */}
+        <div className="absolute inset-0 opacity-30 mix-blend-multiply pointer-events-none" style={{ backgroundImage: noisePattern }} />
+        
+        {/* Lubang Gantungan (Hole Punch) */}
+        <div className="absolute top-2 w-3 h-3 rounded-full bg-vintage-cream border border-vintage-brown/20 shadow-inner" />
 
-        <span className="font-serif text-3xl md:text-5xl text-vintage-brown font-bold z-10">
+        {/* Garis Dekoratif */}
+        <div className="absolute top-8 w-full h-[1px] bg-vintage-brown/10" />
+
+        <span className="font-serif text-3xl md:text-5xl text-vintage-brown font-bold z-10 mt-2">
           {value < 10 ? `0${value}` : value}
         </span>
       </div>

@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
 import Image from 'next/image';
-import { Disc, Pause, Play } from 'lucide-react'; 
+import { Pause, Play } from 'lucide-react'; 
 import OpeningEnvelope from '../components/OpeningEnvelope';
 import BackgroundMusic from '../components/BackgroundMusic'; 
 import TheIntro from '../components/TheIntro'; 
@@ -18,26 +18,33 @@ interface InvitationClientProps {
   data: InvitationData;
 }
 
-// Spacer tanpa ornamen ribet
+// Spacer Elegan dengan Ornamen Kecil
 const Spacer = () => (
-  <div className="w-full h-[120px] md:h-[180px] flex items-center justify-center pointer-events-none">
-     <div className="w-[1px] h-20 bg-vintage-brown/20"></div>
+  <div className="w-full h-[150px] flex flex-col items-center justify-center pointer-events-none opacity-30 gap-4">
+     <div className="w-[1px] h-12 bg-vintage-brown/30"></div>
+     <div className="w-2 h-2 rotate-45 border border-vintage-brown/50"></div>
+     <div className="w-[1px] h-12 bg-vintage-brown/30"></div>
   </div>
 );
 
 export default function InvitationClient({ data }: InvitationClientProps) {
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false); 
+  const [showContent, setShowContent] = useState(false);
   
   const { scrollY } = useScroll();
   
-  const heroY = useTransform(scrollY, [0, 800], [0, 300]);
+  const heroY = useTransform(scrollY, [0, 800], [0, 200]);
   const heroOpacity = useTransform(scrollY, [0, 500], [1, 0]);
-  const ornamentsY = useTransform(scrollY, [0, 800], [0, -100]);
+  
+  // Base64 Noise Pattern (Global Grain)
+  const noisePattern = `url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEHb29v///8AAABOmZnDw8O+vr6urq6hoaG7j36HAAAACHRSTlMAM8T/mZkzM4Vj3DIAAAArSURBVDjLY2AYBaNgFIyCUTAKRsEoGAWjYBSMglEwCkbBKBgFo2AUjIIhAQA9bATXt91HzAAAAABJRU5ErkJggg==")`;
 
   const handleOpenInvitation = () => {
     setIsEnvelopeOpen(true);
-    setIsMusicPlaying(true); 
+    setIsMusicPlaying(true);
+    // Delay sedikit untuk menampilkan konten setelah animasi amplop
+    setTimeout(() => setShowContent(true), 800);
   };
 
   const toggleMusic = () => {
@@ -52,12 +59,19 @@ export default function InvitationClient({ data }: InvitationClientProps) {
   }).replace(/\//g, ' . '); 
 
   return (
-    <main className="min-h-screen w-full overflow-x-hidden bg-vintage-cream text-vintage-brown relative font-sans">
+    <main className="min-h-screen w-full overflow-x-hidden bg-vintage-cream text-vintage-brown relative font-sans selection:bg-vintage-gold/30">
       
+      {/* --- GLOBAL VINTAGE NOISE OVERLAY --- */}
+      {/* Ini memberikan efek film grain ke SELURUH website */}
+      <div 
+        className="fixed inset-0 z-[5] pointer-events-none opacity-[0.03] mix-blend-multiply" 
+        style={{ backgroundImage: noisePattern }} 
+      />
+
       <BackgroundMusic isPlaying={isMusicPlaying} />
 
       <AnimatePresence mode="wait">
-        {!isEnvelopeOpen && (
+        {!showContent && (
           <OpeningEnvelope 
             onOpen={handleOpenInvitation} 
             couple={data.couple} 
@@ -66,91 +80,95 @@ export default function InvitationClient({ data }: InvitationClientProps) {
         )}
       </AnimatePresence>
 
-      {isEnvelopeOpen && (
+      {showContent && (
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 2, delay: 0.5, ease: "easeOut" }} 
+            transition={{ duration: 2, ease: "easeOut" }} 
             className="relative w-full flex flex-col items-center"
         >
             {/* --- GLOBAL FIXED ORNAMENTS --- */}
             <div className="fixed inset-0 pointer-events-none z-30">
-                <div className="absolute inset-4 md:inset-8 border border-vintage-brown/10 rounded-tl-3xl rounded-br-3xl opacity-60" />
+                {/* Bingkai Layar Tipis */}
+                <div className="absolute inset-4 md:inset-6 border border-vintage-brown/5 rounded-[2rem] opacity-80 pointer-events-none" />
                 
+                {/* Bunga Sudut Kiri Atas */}
                 <motion.div 
-                    initial={{ opacity: 0, rotate: -10, x: -20 }}
-                    animate={{ opacity: 1, rotate: 0, x: 0 }}
-                    transition={{ duration: 2, delay: 1.5 }}
-                    style={{ y: ornamentsY }}
-                    className="absolute -top-10 -left-10 w-48 h-48 md:w-72 md:h-72 opacity-80 mix-blend-multiply"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 1.5, delay: 1 }}
+                    className="absolute -top-12 -left-12 w-48 h-48 md:w-64 md:h-64 opacity-60 mix-blend-multiply"
                 >
                     <Image src="/images/vintage/flower-corner.png" alt="decor" fill className="object-contain transform -scale-x-100" priority />
                 </motion.div>
 
+                {/* Bunga Sudut Kanan Bawah */}
                 <motion.div 
-                    initial={{ opacity: 0, rotate: 10, x: 20 }}
-                    animate={{ opacity: 1, rotate: 0, x: 0 }}
-                    transition={{ duration: 2, delay: 1.5 }}
-                    className="absolute -bottom-10 -right-10 w-48 h-48 md:w-72 md:h-72 opacity-80 mix-blend-multiply"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 1.5, delay: 1 }}
+                    className="absolute -bottom-12 -right-12 w-48 h-48 md:w-64 md:h-64 opacity-60 mix-blend-multiply"
                 >
                     <Image src="/images/vintage/flower-corner.png" alt="decor" fill className="object-contain transform rotate-180" priority />
                 </motion.div>
             </div>
 
-            {/* --- MUSIC CONTROL --- */}
+            {/* --- MUSIC CONTROL (Floating Button) --- */}
             <motion.div 
                 initial={{ opacity: 0, scale: 0.8, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ delay: 3, duration: 1, type: "spring" }}
-                className="fixed bottom-6 left-6 z-50 pointer-events-auto"
+                transition={{ delay: 2, duration: 1, type: "spring" }}
+                className="fixed bottom-8 left-8 z-50 pointer-events-auto"
             >
                 <button 
                     onClick={toggleMusic}
-                    className={`relative w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-vintage-gold/30 bg-[#1a1a1a] shadow-xl flex items-center justify-center group overflow-hidden transition-transform active:scale-95 ${isMusicPlaying ? 'animate-spin-slow' : ''}`}
+                    className={`relative w-10 h-10 md:w-12 md:h-12 rounded-full border border-vintage-brown/20 bg-[#FDFBF7] shadow-lg flex items-center justify-center group overflow-hidden transition-all active:scale-95 hover:border-vintage-gold ${isMusicPlaying ? 'animate-spin-slow' : ''}`}
                     style={{ animationDuration: '8s' }}
                 >
-                    <div className="absolute inset-0 rounded-full border-[3px] border-white/5 opacity-50" />
-                    <div className="relative z-10 bg-vintage-gold/80 rounded-full p-1.5 shadow-inner">
-                        {isMusicPlaying ? <Pause size={14} className="text-[#1a1a1a] fill-current" /> : <Play size={14} className="text-[#1a1a1a] fill-current ml-0.5" />}
+                    <div className="relative z-10 text-vintage-brown/80">
+                        {isMusicPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
                     </div>
                 </button>
             </motion.div>
 
             {/* --- HERO SECTION --- */}
             <section className="min-h-[100dvh] w-full flex flex-col items-center justify-center px-6 py-20 text-center relative overflow-hidden">
+                
                 <motion.div style={{ y: heroY, opacity: heroOpacity }} className="relative z-10 flex flex-col items-center w-full max-w-4xl">
                     <motion.div 
                         initial={{ opacity: 0, y: -30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1.2, delay: 1.8 }}
-                        className="flex flex-col items-center gap-6 mb-8 md:mb-12"
+                        transition={{ duration: 1.2, delay: 0.5 }}
+                        className="flex flex-col items-center gap-6 mb-8"
                     >
-                        <div className="w-[1px] h-16 md:h-24 bg-gradient-to-b from-transparent to-vintage-gold/50"></div>
-                        <p className="font-serif text-xs md:text-sm tracking-[0.4em] text-vintage-olive uppercase font-medium">The Wedding Of</p>
+                        <div className="w-[1px] h-20 bg-gradient-to-b from-transparent to-vintage-brown/40"></div>
+                        <p className="font-serif text-xs md:text-sm tracking-[0.4em] text-vintage-olive uppercase font-bold">The Wedding Of</p>
                     </motion.div>
 
-                    <div className="relative flex flex-col items-center justify-center w-full mb-10 md:mb-14">
+                    <div className="relative flex flex-col items-center justify-center w-full mb-10">
                         <motion.h1 
-                            initial={{ opacity: 0, x: -50, rotate: -3 }}
-                            animate={{ opacity: 1, x: 0, rotate: 0 }}
-                            transition={{ duration: 1.8, delay: 2.2, ease: "easeOut" }}
-                            className="font-script text-[5rem] sm:text-[7rem] md:text-[9rem] lg:text-[11rem] text-vintage-brown leading-[0.8] z-10 relative text-shadow-vintage"
+                            initial={{ opacity: 0, scale: 0.9, rotate: -2 }}
+                            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                            transition={{ duration: 1.8, delay: 0.8, ease: "easeOut" }}
+                            className="font-script text-[5rem] sm:text-[7rem] md:text-[9rem] lg:text-[11rem] text-vintage-brown leading-[0.8] z-10 relative drop-shadow-sm"
                         >
                             {data.couple.groomNickname}
                         </motion.h1>
+                        
                         <motion.span 
                             initial={{ opacity: 0, scale: 0 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 1, delay: 2.8, type: "spring" }}
-                            className="font-serif text-3xl md:text-5xl text-vintage-gold/80 italic my-2 md:my-[-20px] z-20 relative mix-blend-multiply"
+                            transition={{ duration: 1, delay: 1.2, type: "spring" }}
+                            className="font-serif text-4xl md:text-6xl text-vintage-gold/60 italic my-4 z-20 relative mix-blend-multiply"
                         >
                             &
                         </motion.span>
+                        
                         <motion.h1 
-                            initial={{ opacity: 0, x: 50, rotate: 3 }}
-                            animate={{ opacity: 1, x: 0, rotate: 0 }}
-                            transition={{ duration: 1.8, delay: 2.5, ease: "easeOut" }}
-                            className="font-script text-[5rem] sm:text-[7rem] md:text-[9rem] lg:text-[11rem] text-vintage-brown leading-[0.8] z-10 relative text-shadow-vintage"
+                            initial={{ opacity: 0, scale: 0.9, rotate: 2 }}
+                            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                            transition={{ duration: 1.8, delay: 1.5, ease: "easeOut" }}
+                            className="font-script text-[5rem] sm:text-[7rem] md:text-[9rem] lg:text-[11rem] text-vintage-brown leading-[0.8] z-10 relative drop-shadow-sm"
                         >
                             {data.couple.brideNickname}
                         </motion.h1>
@@ -159,30 +177,31 @@ export default function InvitationClient({ data }: InvitationClientProps) {
                     <motion.div 
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1.2, delay: 3.2 }}
-                        className="flex flex-col items-center gap-4 relative z-20"
+                        transition={{ duration: 1.2, delay: 2 }}
+                        className="flex flex-col items-center gap-6 relative z-20"
                     >
-                        <div className="flex items-center gap-6">
-                            <span className="h-[1px] w-8 md:w-16 bg-vintage-gold/60"></span>
-                            <p className="font-serif text-lg md:text-2xl tracking-[0.25em] text-vintage-brown font-bold">{weddingDateString}</p>
-                            <span className="h-[1px] w-8 md:w-16 bg-vintage-gold/60"></span>
+                        <div className="flex items-center gap-4">
+                            <span className="h-[1px] w-12 bg-vintage-brown/30"></span>
+                            <p className="font-serif text-lg md:text-2xl tracking-[0.25em] text-vintage-brown font-bold uppercase">{weddingDateString}</p>
+                            <span className="h-[1px] w-12 bg-vintage-brown/30"></span>
                         </div>
                     </motion.div>
                 </motion.div>
                 
+                {/* Scroll Indicator */}
                 <motion.div 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1, y: [0, 8, 0] }}
-                    transition={{ duration: 2.5, repeat: Infinity, delay: 4, ease: "easeInOut" }}
-                    className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 opacity-50"
+                    transition={{ duration: 2.5, repeat: Infinity, delay: 3, ease: "easeInOut" }}
+                    className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 opacity-60"
                 >
-                    <span className="text-[10px] font-serif tracking-[0.3em] uppercase text-vintage-brown rotate-90 origin-center translate-y-4 mb-8">Scroll</span>
-                    <div className="w-[1px] h-16 md:h-20 bg-gradient-to-b from-vintage-brown/50 to-transparent"></div>
+                    <span className="text-[9px] font-serif tracking-[0.3em] uppercase text-vintage-brown">Scroll</span>
+                    <div className="w-[1px] h-12 bg-gradient-to-b from-vintage-brown/50 to-transparent"></div>
                 </motion.div>
             </section>
 
-            {/* --- MAIN CONTENT --- */}
-            <div className="relative z-20 w-full">
+            {/* --- MAIN CONTENT SECTIONS --- */}
+            <div className="relative z-20 w-full pb-20">
                 <TheIntro />
                 <Spacer />
                 <TheCouple couple={data.couple} />
@@ -197,18 +216,26 @@ export default function InvitationClient({ data }: InvitationClientProps) {
             </div>
 
             {/* --- FOOTER --- */}
-            <footer className="py-20 text-center space-y-6 bg-vintage-cream relative z-20 border-t border-vintage-brown/5">
-                {/* Logo Footer diganti dengan inisial/teks saja */}
-                <div className="flex justify-center opacity-40 mb-6">
-                    <div className="w-12 h-12 border border-vintage-brown rounded-full flex items-center justify-center font-serif text-xl text-vintage-brown">
+            <footer className="py-24 text-center space-y-8 bg-[#F2E8D5] w-full relative z-20 border-t border-vintage-brown/10">
+                {/* Texture Footer */}
+                <div className="absolute inset-0 opacity-20 pointer-events-none mix-blend-multiply" style={{ backgroundImage: noisePattern }} />
+                
+                <div className="relative z-10 flex flex-col items-center gap-6">
+                    <div className="w-12 h-12 border border-vintage-brown/30 rounded-full flex items-center justify-center font-serif text-xl text-vintage-brown">
                         {data.couple.groomNickname[0]}&{data.couple.brideNickname[0]}
                     </div>
+                    
+                    <div className="space-y-2">
+                        <p className="font-script text-4xl text-vintage-brown opacity-90">{data.couple.groomNickname} & {data.couple.brideNickname}</p>
+                        <p className="font-serif text-[10px] tracking-[0.3em] text-vintage-olive uppercase opacity-60">Thank You For Your Blessings</p>
+                    </div>
+                    
+                    <div className="w-full max-w-xs h-[1px] bg-vintage-brown/10 mx-auto" />
+                    
+                    <p className="opacity-40 text-[9px] font-sans tracking-widest uppercase">
+                        © {weddingDate.getFullYear()} Wedding Invitation • Built with Love
+                    </p>
                 </div>
-                <div className="space-y-2">
-                    <p className="font-script text-4xl text-vintage-brown opacity-90">{data.couple.groomNickname} & {data.couple.brideNickname}</p>
-                    <p className="font-serif text-[10px] tracking-[0.3em] text-vintage-olive uppercase opacity-60">Thank You For Your Blessings</p>
-                </div>
-                <div className="pt-8 opacity-40 text-[9px] font-sans tracking-widest uppercase">© {weddingDate.getFullYear()} Wedding Invitation • Built with Love</div>
             </footer>
 
         </motion.div>
