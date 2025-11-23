@@ -47,7 +47,6 @@ export default function TheIntro() {
         </p>
       </motion.div>
 
-      {/* CARD QUOTES (DENGAN TEXTURE KERTAS) */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 40 }}
         whileInView={{ opacity: 1, scale: 1, y: 0 }}
@@ -57,8 +56,10 @@ export default function TheIntro() {
       >
         <div className="relative bg-[#FDFBF7] p-8 md:p-16 shadow-lg border border-vintage-brown/10 transform rotate-1 hover:rotate-0 transition-transform duration-700 overflow-hidden">
             
-            {/* TEXTURE: Kertas Quote */}
-            <div className="absolute inset-0 opacity-50 bg-paper-texture mix-blend-multiply pointer-events-none" />
+            {/* FIX: Texture Menggunakan Image Component */}
+            <div className="absolute inset-0 z-0 opacity-40 pointer-events-none mix-blend-multiply">
+               <Image src="/images/vintage/paper-texture.png" alt="texture" fill className="object-cover" />
+            </div>
 
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-vintage-gold/20 backdrop-blur-sm rotate-1 shadow-sm" />
             

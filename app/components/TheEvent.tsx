@@ -31,7 +31,6 @@ export default function TheEvent({ event }: TheEventProps) {
           viewport={{ once: true }}
           className="flex flex-col items-center gap-4"
         >
-          {/* No Wax Seal */}
           <div className="w-1.5 h-1.5 bg-vintage-gold rounded-full mb-2"></div>
           
           <h2 className="font-serif text-4xl md:text-6xl text-vintage-brown uppercase tracking-[0.2em] relative inline-block py-4">
@@ -83,8 +82,10 @@ function VintageCard({ title, time, location, address, delay, mapsUrl }: any) {
     >
       <div className="relative w-full bg-[#F9F7F2] shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-500 hover:shadow-[0_20px_40px_rgb(92,64,51,0.15)] hover:-translate-y-1 overflow-hidden rounded-sm">
         
-        {/* TEXTURE: Tiket Acara */}
-        <div className="absolute inset-0 opacity-60 bg-paper-texture mix-blend-multiply pointer-events-none" />
+        {/* FIX: Texture Menggunakan Image Component */}
+        <div className="absolute inset-0 z-0 opacity-50 pointer-events-none mix-blend-multiply">
+           <Image src="/images/vintage/paper-texture.png" alt="texture" fill className="object-cover" />
+        </div>
 
         <div className="absolute inset-2 border border-vintage-brown/10 pointer-events-none z-20" />
         <div className="absolute inset-3 border border-vintage-brown/5 pointer-events-none z-20" />
